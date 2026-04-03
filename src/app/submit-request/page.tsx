@@ -20,10 +20,20 @@ function getInputClassName(hasError: boolean) {
   } placeholder:text-stone-500`;
 }
 
+type UploadedPhoto = {
+  contentType: string;
+  fileName: string;
+  path: string;
+  size: number;
+};
+
 export default function SubmitRequestPage() {
   const [values, setValues] = useState(initialWorkOrderRequestValues);
   const [errors, setErrors] = useState<WorkOrderFieldErrors>({});
   const [isValidated, setIsValidated] = useState(false);
+  const [isUploadingPhotos, setIsUploadingPhotos] = useState(false);
+  const [uploadMessage, setUploadMessage] = useState<string | null>(null);
+  const [uploadedPhotos, setUploadedPhotos] = useState<UploadedPhoto[]>([]);
 
   function updateField<K extends keyof typeof values>(field: K, value: (typeof values)[K]) {
     setValues((current) => ({
@@ -45,9 +55,11 @@ export default function SubmitRequestPage() {
   function handlePhotoChange(event: ChangeEvent<HTMLInputElement>) {
     const files = Array.from(event.target.files ?? []);
     updateField("photos", files);
+    setUploadMessage(null);
+    setUploadedPhotos([]);
   }
 
-  function handleReviewRequest(event: FormEvent<HTMLFormElement>) {
+  async function handleReviewRequest(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     const result = workOrderRequestSchema.safeParse(values);
@@ -65,11 +77,59 @@ export default function SubmitRequestPage() {
 
       setErrors(fieldErrors);
       setIsValidated(false);
+      setUploadMessage(null);
       return;
     }
 
     setErrors({});
-    setIsValidated(true);
+    setUploadMessage(null);
+
+    if (values.photos.length === 0) {
+      setUploadedPhotos([]);
+      setIsValidated(true);
+      setUploadMessage("Validation passed. No photos were selected for upload.");
+      return;
+    }
+
+    setIsUploadingPhotos(true);
+
+    try {
+      const formData = new FormData();
+
+      for (const photo of values.photos) {
+        formData.append("photos", photo);
+      }
+
+      const response = await fetch("/api/uploads/intake", {
+        method: "POST",
+        body: formData,
+      });
+
+      const payload = (await response.json()) as
+        | { ok: true; photos: UploadedPhoto[] }
+        | { ok: false; message: string };
+
+      if (!response.ok || !payload.ok) {
+        setIsValidated(false);
+        setUploadMessage(
+          payload.ok ? "Photo upload failed." : payload.message
+        );
+        return;
+      }
+
+      setUploadedPhotos(payload.photos);
+      setIsValidated(true);
+      setUploadMessage("Validation passed and intake photos were uploaded.");
+    } catch (error) {
+      setIsValidated(false);
+      setUploadMessage(
+        error instanceof Error
+          ? error.message
+          : "Photo upload failed unexpectedly."
+      );
+    } finally {
+      setIsUploadingPhotos(false);
+    }
   }
 
   return (
@@ -125,8 +185,20 @@ export default function SubmitRequestPage() {
             {isValidated ? (
               <div className="rounded-[1.5rem] border border-emerald-300/25 bg-emerald-400/10 px-5 py-4 text-sm leading-7 text-emerald-100">
                 The form layout is validated and ready for the next step. The
-                data is not being submitted yet, but all current fields pass the
+                data is not being submitted yet, but the current fields pass the
                 client-side checks.
+              </div>
+            ) : null}
+
+            {uploadMessage ? (
+              <div
+                className={`rounded-[1.5rem] border px-5 py-4 text-sm leading-7 ${
+                  isValidated
+                    ? "border-emerald-300/25 bg-emerald-400/10 text-emerald-100"
+                    : "border-rose-300/25 bg-rose-400/10 text-rose-100"
+                }`}
+              >
+                {uploadMessage}
               </div>
             ) : null}
 
@@ -340,6 +412,24 @@ export default function SubmitRequestPage() {
               {errors.photos ? (
                 <p className="text-sm text-rose-300">{errors.photos}</p>
               ) : null}
+
+              {uploadedPhotos.length > 0 ? (
+                <div className="rounded-[1.5rem] border border-white/10 bg-black/20 p-4">
+                  <p className="text-sm font-medium text-stone-200">
+                    Uploaded to Supabase Storage
+                  </p>
+                  <ul className="mt-3 space-y-2 text-sm text-stone-300">
+                    {uploadedPhotos.map((photo) => (
+                      <li key={photo.path}>
+                        <span className="font-medium text-stone-100">
+                          {photo.fileName}
+                        </span>{" "}
+                        stored at <span className="text-amber-200">{photo.path}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
             </div>
 
             <div className="flex flex-col gap-3 border-t border-white/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
@@ -356,15 +446,18 @@ export default function SubmitRequestPage() {
                     setValues(initialWorkOrderRequestValues);
                     setErrors({});
                     setIsValidated(false);
+                    setUploadMessage(null);
+                    setUploadedPhotos([]);
                   }}
                 >
                   Reset Form
                 </button>
                 <button
                   type="submit"
-                  className="rounded-full bg-amber-300 px-6 py-3 text-sm font-semibold text-stone-950 transition hover:bg-amber-200"
+                  disabled={isUploadingPhotos}
+                  className="rounded-full bg-amber-300 px-6 py-3 text-sm font-semibold text-stone-950 transition hover:bg-amber-200 disabled:cursor-not-allowed disabled:bg-amber-200/60"
                 >
-                  Review Request
+                  {isUploadingPhotos ? "Uploading Photos..." : "Review Request"}
                 </button>
               </div>
             </div>
