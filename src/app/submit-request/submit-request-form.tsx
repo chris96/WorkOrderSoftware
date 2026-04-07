@@ -262,13 +262,17 @@ export function SubmitRequestForm({
                   value={values.unit}
                   onChange={(event) => updateField("unit", event.target.value)}
                 >
-                  <option value="" disabled>
+                  <option value="" disabled className="bg-white text-stone-950">
                     {unitOptions.length > 0
                       ? "Select your unit"
                       : "No units available yet"}
                   </option>
                   {unitOptions.map((unit) => (
-                    <option key={unit} value={unit}>
+                    <option
+                      key={unit}
+                      value={unit}
+                      className="bg-white text-stone-950"
+                    >
                       {unit}
                     </option>
                   ))}
@@ -293,11 +297,15 @@ export function SubmitRequestForm({
                     updateField("category", event.target.value)
                   }
                 >
-                  <option value="" disabled>
+                  <option value="" disabled className="bg-white text-stone-950">
                     Choose a category
                   </option>
                   {workOrderCategories.map((category) => (
-                    <option key={category} value={category}>
+                    <option
+                      key={category}
+                      value={category}
+                      className="bg-white text-stone-950"
+                    >
                       {category}
                     </option>
                   ))}
