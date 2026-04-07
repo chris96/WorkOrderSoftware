@@ -491,7 +491,7 @@ export function SubmitRequestForm({
 
             <div className="flex flex-col gap-3 border-t border-white/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-sm leading-7 text-stone-400">
-                The request now submits to Supabase. A dedicated confirmation
+                The request now submits to our database. A dedicated confirmation
                 page will replace this inline status soon.
               </p>
 
