@@ -69,7 +69,103 @@ Success criteria:
 - Photos are attached correctly
 - Submission data is saved correctly
 
-### Phase 3: Notifications and Emergency Routing
+### Phase 3: Staff Dashboard
+Build the authenticated building staff side.
+
+Deliverables:
+- Harden the tenant intake completion flow so a successful submit does not leave the form populated and easy to resubmit accidentally
+- Add duplicate-submission protection for tenant requests, ideally by redirecting or resetting after success and guarding the backend against double-submit behavior
+- Staff sign-in
+- Initial roles for `super` and `backup`
+- Dashboard showing open and recently closed work orders
+- Request detail page with photos, tenant info, status, and timeline
+- Ability to change status
+
+Recommended statuses:
+- `new`
+- `in_progress`
+- `waiting_on_parts`
+- `closed`
+
+Behavior:
+- After a tenant request is submitted successfully, the UI should not encourage a second identical submission from the same filled-out form state
+- Duplicate form submissions should be prevented both in the frontend flow and in the backend handling
+- Staff users can view and manage all requests
+- Access to staff pages is blocked for non-staff users
+- Status changes create timeline events
+
+Success criteria:
+- A successfully submitted tenant request does not remain in a ready-to-resubmit state
+- A double click or repeated submit action does not create duplicate work orders unintentionally
+- Staff can log in and manage requests
+- Request details are easy to review
+- Status updates are saved and visible
+
+### Phase 4: Closeout Workflow
+Build the repair completion flow for the super.
+
+Deliverables:
+- Closeout form for staff
+- Required repair summary field
+- Optional material or note fields
+- Closeout photo uploads
+- Request completion timestamp
+
+Behavior:
+- Only staff can close a request
+- Closing a request stores notes, photos, and completion metadata
+- Closeout actions create timeline events
+
+Success criteria:
+- Staff can close a request with notes and photos
+- Closed requests are removed from the open queue
+- Completion data is saved correctly
+
+### Phase 5: Repair Report and Tenant Completion Email
+Generate the final output sent to the tenant.
+
+Deliverables:
+- PDF repair report generation
+- Completion email template
+- Report storage and metadata tracking
+
+Report contents:
+- Tenant and unit information
+- Original request details
+- Emergency flag
+- Repair summary
+- Closeout date
+- Closeout photos
+
+Behavior:
+- Closing a request generates a report
+- The tenant receives a completion email with the report attached or linked
+
+Success criteria:
+- Report generation works reliably
+- Tenant receives the closeout email
+- Report content matches the closed request
+
+### Phase 6: Tenant Portal
+Add tenant-side visibility after the core workflow is stable.
+
+Deliverables:
+- Tenant access flow
+- Tenant request history page
+- Request detail page showing current status and final report
+
+Recommended v1 access model:
+- Passwordless email-based access
+
+Behavior:
+- Tenants can view only their own requests
+- Tenants can see request status and completed reports
+
+Success criteria:
+- Tenant can sign in or access their request history securely
+- Tenant cannot view another tenant's requests
+
+### Phase 7: Notifications and Emergency Routing
 Add the super notification flow.
 
 Deliverables:
@@ -97,96 +193,6 @@ Success criteria:
 - Tenant receives a confirmation email
 - Emergency requests trigger all escalation channels
 - Notification failures do not break request creation
-
-### Phase 4: Staff Dashboard
-Build the authenticated building staff side.
-
-Deliverables:
-- Staff sign-in
-- Initial roles for `super` and `backup`
-- Dashboard showing open and recently closed work orders
-- Request detail page with photos, tenant info, status, and timeline
-- Ability to change status
-
-Recommended statuses:
-- `new`
-- `in_progress`
-- `waiting_on_parts`
-- `closed`
-
-Behavior:
-- Staff users can view and manage all requests
-- Access to staff pages is blocked for non-staff users
-- Status changes create timeline events
-
-Success criteria:
-- Staff can log in and manage requests
-- Request details are easy to review
-- Status updates are saved and visible
-
-### Phase 5: Closeout Workflow
-Build the repair completion flow for the super.
-
-Deliverables:
-- Closeout form for staff
-- Required repair summary field
-- Optional material or note fields
-- Closeout photo uploads
-- Request completion timestamp
-
-Behavior:
-- Only staff can close a request
-- Closing a request stores notes, photos, and completion metadata
-- Closeout actions create timeline events
-
-Success criteria:
-- Staff can close a request with notes and photos
-- Closed requests are removed from the open queue
-- Completion data is saved correctly
-
-### Phase 6: Repair Report and Tenant Completion Email
-Generate the final output sent to the tenant.
-
-Deliverables:
-- PDF repair report generation
-- Completion email template
-- Report storage and metadata tracking
-
-Report contents:
-- Tenant and unit information
-- Original request details
-- Emergency flag
-- Repair summary
-- Closeout date
-- Closeout photos
-
-Behavior:
-- Closing a request generates a report
-- The tenant receives a completion email with the report attached or linked
-
-Success criteria:
-- Report generation works reliably
-- Tenant receives the closeout email
-- Report content matches the closed request
-
-### Phase 7: Tenant Portal
-Add tenant-side visibility after the core workflow is stable.
-
-Deliverables:
-- Tenant access flow
-- Tenant request history page
-- Request detail page showing current status and final report
-
-Recommended v1 access model:
-- Passwordless email-based access
-
-Behavior:
-- Tenants can view only their own requests
-- Tenants can see request status and completed reports
-
-Success criteria:
-- Tenant can sign in or access their request history securely
-- Tenant cannot view another tenant's requests
 
 ## Suggested Data Model
 
@@ -234,12 +240,12 @@ If building this in the fastest practical order, follow this sequence:
 
 1. Setup and foundation
 2. Tenant intake
-3. Email notifications
-4. Emergency Twilio escalation
-5. Staff dashboard
-6. Closeout workflow
-7. PDF report generation
-8. Tenant portal
+3. Staff dashboard
+4. Closeout workflow
+5. PDF report generation
+6. Tenant portal
+7. Email notifications
+8. Emergency Twilio escalation
 
 ## Assumptions for V1
 - The building has about 90 units, so the system does not need heavy enterprise complexity
