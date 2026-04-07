@@ -22,12 +22,12 @@
 ## Implementation Plan
 
 ### 1. Form foundation
-- Replace the placeholder `/submit-request` page with a real tenant request form
+- Build the real `/submit-request` tenant request flow on top of the existing page
 - Keep the form server-backed and simple
 - Start with a single-page flow
 
 ### 2. Required fields
-- unit
+- unit selection backed by the `units` table
 - tenant name
 - email
 - phone
@@ -40,17 +40,21 @@
 - Validate all required text fields
 - Validate email format
 - Make phone optional unless you want it required
+- Validate the selected unit on the server and resolve it to `units.id`
 - Restrict photo file types to supported image formats
 - Enforce a reasonable upload size limit
 
 ### 4. Storage flow
+- Create the `work_orders` row first so uploads can be linked safely
 - Upload intake photos to the Supabase `work-order-photos` bucket
 - Store them under an `intake/` path
-- Save file metadata in `work_order_photos`
+- Save file metadata in `work_order_photos` using the new `work_order_id`
+- If any upload or metadata insert fails, clean up the uploaded files and do not leave orphaned storage objects
 
 ### 5. Database flow
+- Look up the selected unit in `units` and use its `id`
 - Insert a new row into `work_orders`
-- Link the selected unit
+- Link the selected `unit_id`
 - Store tenant contact details and request details
 - Mark `is_emergency` from the form input
 - Default the status to `new`
@@ -67,7 +71,9 @@
 - Submit with no photos
 - Submit with photos
 - Submit with emergency checked
+- Verify invalid or missing unit selection is rejected
 - Verify work order row is created
 - Verify photo metadata rows are created
+- Verify no orphaned intake uploads remain after a failed submission path
 - Verify `submitted` event is created
 - Verify invalid form input is rejected

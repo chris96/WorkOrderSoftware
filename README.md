@@ -58,7 +58,6 @@ Deliverables:
 - Support for photo uploads
 - Server-side request creation
 - Confirmation page after submission
-- Confirmation email to the tenant
 
 Behavior:
 - Every submitted request creates a `work_order`
@@ -69,13 +68,13 @@ Success criteria:
 - A tenant can submit a normal request from start to finish
 - Photos are attached correctly
 - Submission data is saved correctly
-- Tenant receives a confirmation email
 
 ### Phase 3: Notifications and Emergency Routing
 Add the super notification flow.
 
 Deliverables:
 - Email notification to the super for every new request
+- Confirmation email to the tenant
 - Emergency rules based on tenant checkbox plus selected request categories
 - Twilio SMS for emergency requests
 - Twilio voice call for emergency requests
@@ -95,6 +94,7 @@ Recommended emergency categories:
 
 Success criteria:
 - Normal requests notify the super by email
+- Tenant receives a confirmation email
 - Emergency requests trigger all escalation channels
 - Notification failures do not break request creation
 
