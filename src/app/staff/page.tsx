@@ -14,12 +14,20 @@ export default function StaffPage() {
           This page will become the super and backup dashboard for reviewing,
           updating, and closing work orders.
         </p>
-        <Link
-          href="/"
-          className="mt-8 inline-flex rounded-full border border-white/15 px-5 py-3 text-sm font-medium text-white transition hover:border-white/30 hover:bg-white/5"
-        >
-          Back Home
-        </Link>
+        <div className="mt-8 flex flex-wrap gap-3">
+          <Link
+            href="/staff/bootstrap"
+            className="inline-flex rounded-full bg-amber-300 px-5 py-3 text-sm font-medium text-stone-950 transition hover:bg-amber-200"
+          >
+            Bootstrap Staff Users
+          </Link>
+          <Link
+            href="/"
+            className="inline-flex rounded-full border border-white/15 px-5 py-3 text-sm font-medium text-white transition hover:border-white/30 hover:bg-white/5"
+          >
+            Back Home
+          </Link>
+        </div>
       </div>
     </main>
   );

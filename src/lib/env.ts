@@ -36,6 +36,15 @@ export function getSupabaseServerEnv() {
   };
 }
 
+export function getStaffBootstrapEnv() {
+  return {
+    bootstrapKey: requireEnv(
+      "STAFF_BOOTSTRAP_KEY",
+      process.env.STAFF_BOOTSTRAP_KEY
+    ),
+  };
+}
+
 export function hasSupabasePublicEnv() {
   return Boolean(
     process.env.NEXT_PUBLIC_SUPABASE_URL &&
