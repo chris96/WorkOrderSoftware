@@ -30,7 +30,7 @@ export default function Home() {
                 Submit Request
               </Link>
               <Link className="rounded-full border border-white/15 px-5 py-3 text-sm font-medium text-white transition hover:border-white/30 hover:bg-white/5" href="/staff">
-                Staff Area
+                Staff Portal
               </Link>
               <Link className="rounded-full border border-white/15 px-5 py-3 text-sm font-medium text-white transition hover:border-white/30 hover:bg-white/5" href="/tenant">
                 Tenant Portal
