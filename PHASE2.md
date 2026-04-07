@@ -13,11 +13,16 @@
 - [x] Add form validation
 - [x] Add photo upload support
 - [x] Upload intake photos to Supabase Storage
-- [ ] Insert a new work order into Supabase
-- [ ] Insert a `submitted` event into `work_order_events`
-- [ ] Add a confirmation page or success state
-- [ ] Verify submitted data appears correctly in Supabase
-- [ ] Test normal request submission end to end
+- [x] Insert a new work order into Supabase
+  - Satisfied by the live `/api/work-orders/intake` flow, which now creates the `work_orders` row during submission.
+- [x] Insert a `submitted` event into `work_order_events`
+  - Satisfied by the same intake submission route, which records a `submitted` event after the work order is created.
+- [x] Add a confirmation page or success state
+  - Satisfied by the inline success state. We are explicitly counting the inline success box as the confirmation experience for Phase 2, while noting that a dedicated confirmation page may still be added later.
+- [x] Verify submitted data appears correctly in Supabase
+  - Satisfied by manual verification that submitted requests and uploaded photos are appearing in Supabase after form submission.
+- [x] Test normal request submission end to end
+  - Satisfied by manual end-to-end testing. We confirmed the form submits successfully, uploads photos, and creates the expected database records.
 
 ## Implementation Plan
 

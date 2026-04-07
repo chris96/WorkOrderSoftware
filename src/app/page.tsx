@@ -20,9 +20,9 @@ export default function Home() {
                 Work order software for a 90-unit building.
               </h1>
               <p className="max-w-2xl text-lg leading-8 text-stone-300">
-                The foundation is in place, and development is now focused on
-                the tenant request experience. We are actively designing the
-                maintenance intake flow before wiring up live submission.
+                The tenant intake foundation is now live. Residents can submit
+                maintenance requests with contact details, urgency, and optional
+                photos, and those requests are being written into our database.
               </p>
             </div>
             <div className="flex flex-wrap gap-3">
@@ -40,20 +40,46 @@ export default function Home() {
 
           <section className="rounded-[1.5rem] border border-white/10 bg-black/20 p-6">
             <h2 className="text-sm uppercase tracking-[0.25em] text-stone-400">
-              Current Scope
+              Live Now
             </h2>
             <ul className="mt-4 space-y-3 text-sm leading-7 text-stone-300">
               <li>Phase 1 infrastructure is complete with Vercel and Supabase.</li>
-              <li>The tenant request form is now being designed in Phase 2.</li>
-              <li>Staff tools, notifications, and closeout workflows are next.</li>
+              <li>Tenant request intake is live with validation and unit-backed selection.</li>
+              <li>Requests can create work orders, upload intake photos, and log submission events.</li>
             </ul>
           </section>
         </div>
 
+        <section className="mt-8 grid gap-6 md:grid-cols-2">
+          <div className="rounded-[1.5rem] border border-white/10 bg-black/20 p-6">
+            <h2 className="text-sm uppercase tracking-[0.25em] text-stone-400">
+              Recently Completed
+            </h2>
+            <ul className="mt-4 space-y-3 text-sm leading-7 text-stone-300">
+              <li>Public maintenance request form for tenants</li>
+              <li>Photo uploads into our database storage</li>
+              <li>Work order creation and submission timeline logging</li>
+              <li>Inline success confirmation after request submission</li>
+            </ul>
+          </div>
+
+          <div className="rounded-[1.5rem] border border-white/10 bg-black/20 p-6">
+            <h2 className="text-sm uppercase tracking-[0.25em] text-stone-400">
+              Coming Next
+            </h2>
+            <ul className="mt-4 space-y-3 text-sm leading-7 text-stone-300">
+              <li>Phase 3 notification flow with tenant email confirmation and emergency escalation</li>
+              <li>Phase 4 staff dashboard for the super and backup users</li>
+              <li>Phase 5 closeout workflow for repairs, notes, and completion photos</li>
+              <li>Phase 6 report generation and tenant completion emails</li>
+            </ul>
+          </div>
+        </section>
+
         <footer className="mt-10 flex flex-col gap-2 border-t border-white/10 pt-6 text-sm text-stone-400 md:flex-row md:items-center md:justify-between">
           <p>This application is currently under development.</p>
           <p>
-            Status: Phase 2 in progress as of {currentDate}
+            Status: Phase 2 complete as of {currentDate}
           </p>
         </footer>
       </div>
