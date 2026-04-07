@@ -1,18 +1,18 @@
 # Phase 2
 
 ## Checklist
-- [ ] Design the tenant request form layout
-- [ ] Add form fields for:
-  - [ ] unit
-  - [ ] tenant name
-  - [ ] email
-  - [ ] phone
-  - [ ] category
-  - [ ] description
-  - [ ] emergency flag
-- [ ] Add form validation
-- [ ] Add photo upload support
-- [ ] Upload intake photos to Supabase Storage
+- [x] Design the tenant request form layout
+- [x] Add form fields for:
+  - [x] unit
+  - [x] tenant name
+  - [x] email
+  - [x] phone
+  - [x] category
+  - [x] description
+  - [x] emergency flag
+- [x] Add form validation
+- [x] Add photo upload support
+- [x] Upload intake photos to Supabase Storage
 - [ ] Insert a new work order into Supabase
 - [ ] Insert a `submitted` event into `work_order_events`
 - [ ] Add a confirmation page or success state
