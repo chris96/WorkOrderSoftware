@@ -5,7 +5,7 @@ export default function Home() {
     month: "long",
     day: "numeric",
     year: "numeric",
-  }).format(new Date("2026-04-03T12:00:00-04:00"));
+  }).format(new Date("2026-04-06T12:00:00-04:00"));
 
   return (
     <main className="flex flex-1 items-center justify-center px-6 py-16">
