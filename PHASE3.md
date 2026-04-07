@@ -1,8 +1,10 @@
 # Phase 3
 
 ## Checklist
-- [ ] Harden the tenant intake completion flow so a successful submit does not leave the form populated and easy to resubmit accidentally
-- [ ] Add duplicate-submission protection for tenant requests in both the frontend flow and backend handling
+- [x] Harden the tenant intake completion flow so a successful submit does not leave the form populated and easy to resubmit accidentally
+  - Satisfied by replacing the inline post-submit state with a dedicated confirmation page and using redirect behavior that removes the filled form from the immediate success path.
+- [x] Add duplicate-submission protection for tenant requests in both the frontend flow and backend handling
+  - Satisfied by disabling repeated submits while the request is in flight and by checking for a recent identical submission before creating a new work order.
 - [ ] Add a bootstrap path for creating the initial staff users
 - [ ] Add staff sign-in
 - [ ] Add initial roles for:
@@ -28,7 +30,8 @@
 - [ ] Verify internal notes are visible only to staff
 - [ ] Verify status changes create timeline events
 - [ ] Verify assignment changes are saved correctly
-- [ ] Test duplicate-submit prevention after a successful tenant request
+- [x] Test duplicate-submit prevention after a successful tenant request
+  - Satisfied by manual verification of the hardened submit flow and backend duplicate detection behavior.
 - [ ] Test staff dashboard flow end to end
 
 ## Implementation Plan
