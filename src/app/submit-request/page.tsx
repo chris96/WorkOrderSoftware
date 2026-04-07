@@ -27,6 +27,12 @@ type UploadedPhoto = {
   size: number;
 };
 
+type SubmittedWorkOrder = {
+  id: string;
+  status: string;
+  unitNumber: string;
+};
+
 export default function SubmitRequestPage() {
   const [values, setValues] = useState(initialWorkOrderRequestValues);
   const [errors, setErrors] = useState<WorkOrderFieldErrors>({});
@@ -34,6 +40,8 @@ export default function SubmitRequestPage() {
   const [isUploadingPhotos, setIsUploadingPhotos] = useState(false);
   const [uploadMessage, setUploadMessage] = useState<string | null>(null);
   const [uploadedPhotos, setUploadedPhotos] = useState<UploadedPhoto[]>([]);
+  const [submittedWorkOrder, setSubmittedWorkOrder] =
+    useState<SubmittedWorkOrder | null>(null);
 
   function updateField<K extends keyof typeof values>(field: K, value: (typeof values)[K]) {
     setValues((current) => ({
@@ -57,6 +65,7 @@ export default function SubmitRequestPage() {
     updateField("photos", files);
     setUploadMessage(null);
     setUploadedPhotos([]);
+    setSubmittedWorkOrder(null);
   }
 
   async function handleReviewRequest(event: FormEvent<HTMLFormElement>) {
@@ -78,35 +87,35 @@ export default function SubmitRequestPage() {
       setErrors(fieldErrors);
       setIsValidated(false);
       setUploadMessage(null);
+      setSubmittedWorkOrder(null);
       return;
     }
 
     setErrors({});
     setUploadMessage(null);
-
-    if (values.photos.length === 0) {
-      setUploadedPhotos([]);
-      setIsValidated(true);
-      setUploadMessage("Validation passed. No photos were selected for upload.");
-      return;
-    }
-
     setIsUploadingPhotos(true);
 
     try {
       const formData = new FormData();
+      formData.append("unit", values.unit);
+      formData.append("category", values.category);
+      formData.append("tenantName", values.tenantName);
+      formData.append("email", values.email);
+      formData.append("phone", values.phone ?? "");
+      formData.append("description", values.description);
+      formData.append("isEmergency", String(values.isEmergency));
 
       for (const photo of values.photos) {
         formData.append("photos", photo);
       }
 
-      const response = await fetch("/api/uploads/intake", {
+      const response = await fetch("/api/work-orders/intake", {
         method: "POST",
         body: formData,
       });
 
       const payload = (await response.json()) as
-        | { ok: true; photos: UploadedPhoto[] }
+        | { ok: true; uploadedPhotos: UploadedPhoto[]; workOrder: SubmittedWorkOrder }
         | { ok: false; message: string };
 
       if (!response.ok || !payload.ok) {
@@ -114,18 +123,27 @@ export default function SubmitRequestPage() {
         setUploadMessage(
           payload.ok ? "Photo upload failed." : payload.message
         );
+        setSubmittedWorkOrder(null);
+        setUploadedPhotos([]);
         return;
       }
 
-      setUploadedPhotos(payload.photos);
+      setUploadedPhotos(payload.uploadedPhotos);
+      setSubmittedWorkOrder(payload.workOrder);
       setIsValidated(true);
-      setUploadMessage("Validation passed and intake photos were uploaded.");
+      setUploadMessage(
+        payload.uploadedPhotos.length > 0
+          ? "Your request was saved and the intake photos were uploaded."
+          : "Your request was saved successfully."
+      );
     } catch (error) {
       setIsValidated(false);
+      setSubmittedWorkOrder(null);
+      setUploadedPhotos([]);
       setUploadMessage(
         error instanceof Error
           ? error.message
-          : "Photo upload failed unexpectedly."
+          : "Request submission failed unexpectedly."
       );
     } finally {
       setIsUploadingPhotos(false);
@@ -166,8 +184,9 @@ export default function SubmitRequestPage() {
                 Current scope
               </p>
               <p className="mt-2 text-sm leading-7 text-amber-50/90">
-                The form below is a design-ready framework only. Submission,
-                validation, uploads, and database writes come next.
+                This form now validates, creates a work order record, uploads
+                intake photos, and records the submission event. A dedicated
+                confirmation flow will come next.
               </p>
             </div>
           </div>
@@ -199,6 +218,22 @@ export default function SubmitRequestPage() {
                 }`}
               >
                 {uploadMessage}
+              </div>
+            ) : null}
+
+            {submittedWorkOrder ? (
+              <div className="rounded-[1.5rem] border border-white/10 bg-black/20 px-5 py-4 text-sm leading-7 text-stone-200">
+                <p className="font-medium text-white">
+                  Work order created for unit {submittedWorkOrder.unitNumber}
+                </p>
+                <p className="mt-1">
+                  Request ID:{" "}
+                  <span className="text-amber-200">{submittedWorkOrder.id}</span>
+                </p>
+                <p>
+                  Current status:{" "}
+                  <span className="text-amber-200">{submittedWorkOrder.status}</span>
+                </p>
               </div>
             ) : null}
 
@@ -448,6 +483,7 @@ export default function SubmitRequestPage() {
                     setIsValidated(false);
                     setUploadMessage(null);
                     setUploadedPhotos([]);
+                    setSubmittedWorkOrder(null);
                   }}
                 >
                   Reset Form
@@ -457,7 +493,7 @@ export default function SubmitRequestPage() {
                   disabled={isUploadingPhotos}
                   className="rounded-full bg-amber-300 px-6 py-3 text-sm font-semibold text-stone-950 transition hover:bg-amber-200 disabled:cursor-not-allowed disabled:bg-amber-200/60"
                 >
-                  {isUploadingPhotos ? "Uploading Photos..." : "Review Request"}
+                  {isUploadingPhotos ? "Submitting Request..." : "Submit Request"}
                 </button>
               </div>
             </div>

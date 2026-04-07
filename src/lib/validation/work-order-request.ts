@@ -14,7 +14,7 @@ export const workOrderCategories = [
 const phonePattern =
   /^[+]?[(]?[0-9]{3}[)]?[-\s./0-9]*$/;
 
-export const workOrderRequestSchema = z.object({
+const workOrderRequestBaseSchema = z.object({
   unit: z.string().trim().min(1, "Please select your unit."),
   category: z.string().trim().min(1, "Please choose a maintenance category."),
   tenantName: z
@@ -35,6 +35,13 @@ export const workOrderRequestSchema = z.object({
     .trim()
     .min(10, "Please include a few more details about the issue."),
   isEmergency: z.boolean(),
+});
+
+export const workOrderRequestDataSchema = workOrderRequestBaseSchema.extend({
+  phone: z.string().trim(),
+});
+
+export const workOrderRequestSchema = workOrderRequestBaseSchema.extend({
   photos: z
     .array(z.instanceof(File))
     .max(5, "Please upload no more than 5 photos.")
@@ -50,6 +57,7 @@ export const workOrderRequestSchema = z.object({
 });
 
 export type WorkOrderRequestValues = z.infer<typeof workOrderRequestSchema>;
+export type WorkOrderRequestData = z.infer<typeof workOrderRequestDataSchema>;
 
 export type WorkOrderFieldErrors = Partial<
   Record<keyof WorkOrderRequestValues, string>
@@ -65,4 +73,3 @@ export const initialWorkOrderRequestValues: WorkOrderRequestValues = {
   isEmergency: false,
   photos: [],
 };
-
