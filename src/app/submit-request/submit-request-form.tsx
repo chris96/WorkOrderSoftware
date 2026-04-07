@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ChangeEvent, FormEvent, useState } from "react";
 
 import {
@@ -23,6 +24,19 @@ type SubmittedWorkOrder = {
   unitNumber: string;
 };
 
+type IntakeSubmissionSuccessResponse = {
+  ok: true;
+  duplicate: boolean;
+  message: string;
+  uploadedPhotos: UploadedPhoto[];
+  workOrder: SubmittedWorkOrder;
+};
+
+type IntakeSubmissionErrorResponse = {
+  ok: false;
+  message: string;
+};
+
 type SubmitRequestFormProps = {
   unitOptions: string[];
 };
@@ -38,14 +52,17 @@ function getInputClassName(hasError: boolean) {
 export function SubmitRequestForm({
   unitOptions,
 }: SubmitRequestFormProps) {
+  const router = useRouter();
   const [values, setValues] = useState(initialWorkOrderRequestValues);
   const [errors, setErrors] = useState<WorkOrderFieldErrors>({});
-  const [isValidated, setIsValidated] = useState(false);
   const [isUploadingPhotos, setIsUploadingPhotos] = useState(false);
   const [uploadMessage, setUploadMessage] = useState<string | null>(null);
-  const [uploadedPhotos, setUploadedPhotos] = useState<UploadedPhoto[]>([]);
-  const [submittedWorkOrder, setSubmittedWorkOrder] =
-    useState<SubmittedWorkOrder | null>(null);
+
+  function resetFormState() {
+    setValues(initialWorkOrderRequestValues);
+    setErrors({});
+    setUploadMessage(null);
+  }
 
   function updateField<K extends keyof typeof values>(
     field: K,
@@ -71,13 +88,11 @@ export function SubmitRequestForm({
     const files = Array.from(event.target.files ?? []);
     updateField("photos", files);
     setUploadMessage(null);
-    setUploadedPhotos([]);
-    setSubmittedWorkOrder(null);
-    setIsValidated(false);
   }
 
   async function handleReviewRequest(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const form = event.currentTarget;
 
     const result = workOrderRequestSchema.safeParse(values);
 
@@ -93,9 +108,7 @@ export function SubmitRequestForm({
       }
 
       setErrors(fieldErrors);
-      setIsValidated(false);
       setUploadMessage(null);
-      setSubmittedWorkOrder(null);
       return;
     }
 
@@ -123,35 +136,30 @@ export function SubmitRequestForm({
       });
 
       const payload = (await response.json()) as
-        | {
-            ok: true;
-            uploadedPhotos: UploadedPhoto[];
-            workOrder: SubmittedWorkOrder;
-          }
-        | { ok: false; message: string };
+        | IntakeSubmissionSuccessResponse
+        | IntakeSubmissionErrorResponse;
 
       if (!response.ok || !payload.ok) {
-        setIsValidated(false);
         setUploadMessage(
           payload.ok ? "Photo upload failed." : payload.message
         );
-        setSubmittedWorkOrder(null);
-        setUploadedPhotos([]);
         return;
       }
 
-      setUploadedPhotos(payload.uploadedPhotos);
-      setSubmittedWorkOrder(payload.workOrder);
-      setIsValidated(true);
-      setUploadMessage(
-        payload.uploadedPhotos.length > 0
-          ? "Your request was saved and the intake photos were uploaded."
-          : "Your request was saved successfully."
-      );
+      form.reset();
+      resetFormState();
+
+      const successParams = new URLSearchParams({
+        duplicate: String(payload.duplicate),
+        message: payload.message,
+        requestId: payload.workOrder.id,
+        status: payload.workOrder.status,
+        unit: payload.workOrder.unitNumber,
+        photoCount: String(payload.uploadedPhotos.length),
+      });
+
+      router.replace(`/submit-request/success?${successParams.toString()}`);
     } catch (error) {
-      setIsValidated(false);
-      setSubmittedWorkOrder(null);
-      setUploadedPhotos([]);
       setUploadMessage(
         error instanceof Error
           ? error.message
@@ -213,38 +221,11 @@ export function SubmitRequestForm({
 
         <section className="rounded-[2rem] border border-white/10 bg-stone-950/70 p-6 shadow-2xl shadow-black/40 backdrop-blur md:p-8">
           <form className="space-y-8" onSubmit={handleReviewRequest} noValidate>
-            {isValidated && !submittedWorkOrder ? (
-              <div className="rounded-[1.5rem] border border-emerald-300/25 bg-emerald-400/10 px-5 py-4 text-sm leading-7 text-emerald-100">
-                The form passes the current client-side checks and is ready for
-                submission.
-              </div>
-            ) : null}
-
             {uploadMessage ? (
               <div
-                className={`rounded-[1.5rem] border px-5 py-4 text-sm leading-7 ${
-                  isValidated
-                    ? "border-emerald-300/25 bg-emerald-400/10 text-emerald-100"
-                    : "border-rose-300/25 bg-rose-400/10 text-rose-100"
-                }`}
+                className="rounded-[1.5rem] border border-rose-300/25 bg-rose-400/10 px-5 py-4 text-sm leading-7 text-rose-100"
               >
                 {uploadMessage}
-              </div>
-            ) : null}
-
-            {submittedWorkOrder ? (
-              <div className="rounded-[1.5rem] border border-white/10 bg-black/20 px-5 py-4 text-sm leading-7 text-stone-200">
-                <p className="font-medium text-white">
-                  Work order created for unit {submittedWorkOrder.unitNumber}
-                </p>
-                <p className="mt-1">
-                  Request ID:{" "}
-                  <span className="text-amber-200">{submittedWorkOrder.id}</span>
-                </p>
-                <p>
-                  Current status:{" "}
-                  <span className="text-amber-200">{submittedWorkOrder.status}</span>
-                </p>
               </div>
             ) : null}
 
@@ -469,44 +450,19 @@ export function SubmitRequestForm({
                 <p className="text-sm text-rose-300">{errors.photos}</p>
               ) : null}
 
-              {uploadedPhotos.length > 0 ? (
-                <div className="rounded-[1.5rem] border border-white/10 bg-black/20 p-4">
-                  <p className="text-sm font-medium text-stone-200">
-                    Uploaded to Supabase Storage
-                  </p>
-                  <ul className="mt-3 space-y-2 text-sm text-stone-300">
-                    {uploadedPhotos.map((photo) => (
-                      <li key={photo.path}>
-                        <span className="font-medium text-stone-100">
-                          {photo.fileName}
-                        </span>{" "}
-                        stored at{" "}
-                        <span className="text-amber-200">{photo.path}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ) : null}
             </div>
 
             <div className="flex flex-col gap-3 border-t border-white/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
               <p className="text-sm leading-7 text-stone-400">
-                The request now submits to our database. A dedicated confirmation
-                page will replace this inline status soon.
+                Successful submissions now redirect to a confirmation page so
+                the form is not left in a ready-to-resubmit state.
               </p>
 
               <div className="flex flex-col gap-3 sm:flex-row">
                 <button
                   type="button"
                   className="rounded-full border border-white/15 px-5 py-3 text-sm font-medium text-white transition hover:border-white/30 hover:bg-white/5"
-                  onClick={() => {
-                    setValues(initialWorkOrderRequestValues);
-                    setErrors({});
-                    setIsValidated(false);
-                    setUploadMessage(null);
-                    setUploadedPhotos([]);
-                    setSubmittedWorkOrder(null);
-                  }}
+                  onClick={resetFormState}
                 >
                   Reset Form
                 </button>
