@@ -22,9 +22,13 @@ type WorkOrderDetailRow = {
   assigned_user_id: string | null;
   category: string;
   closed_at: string | null;
+  closed_by_user_id: string | null;
+  closeout_internal_notes: string | null;
   description: string;
   id: string;
   is_emergency: boolean;
+  materials_used: string | null;
+  repair_summary: string | null;
   status: WorkOrderStatus;
   submitted_at: string;
   tenant_email: string;
@@ -124,7 +128,7 @@ export default async function StaffWorkOrderDetailPage({
       supabase
         .from("work_orders")
         .select(
-          "id, unit_id, assigned_user_id, tenant_name, tenant_email, tenant_phone, category, description, status, is_emergency, submitted_at, closed_at"
+          "id, unit_id, assigned_user_id, tenant_name, tenant_email, tenant_phone, category, description, status, is_emergency, submitted_at, closed_at, closed_by_user_id, repair_summary, materials_used, closeout_internal_notes"
         )
         .eq("id", id)
         .single(),
@@ -176,6 +180,9 @@ export default async function StaffWorkOrderDetailPage({
 
   const assignedUser = workOrder.assigned_user_id
     ? staffUserMap.get(workOrder.assigned_user_id)
+    : null;
+  const closedByUser = workOrder.closed_by_user_id
+    ? staffUserMap.get(workOrder.closed_by_user_id)
     : null;
 
   const allPhotos = (photosResult.data ?? []) as WorkOrderPhotoRow[];
@@ -499,7 +506,15 @@ export default async function StaffWorkOrderDetailPage({
               </p>
 
               <div className="mt-6">
-                <CloseoutForm isClosed={workOrder.status === "closed"} />
+                <CloseoutForm
+                  closedAt={formatWorkOrderDateTime(workOrder.closed_at)}
+                  closedByName={closedByUser?.fullName ?? null}
+                  completionNotes={workOrder.closeout_internal_notes}
+                  isClosed={workOrder.status === "closed"}
+                  materialsUsed={workOrder.materials_used}
+                  repairSummary={workOrder.repair_summary}
+                  workOrderId={workOrder.id}
+                />
               </div>
             </section>
 

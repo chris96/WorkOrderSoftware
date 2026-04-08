@@ -5,7 +5,14 @@ export const workOrderStatuses = [
   "closed",
 ] as const;
 
+export const activeWorkOrderStatuses = [
+  "new",
+  "in_progress",
+  "waiting_on_parts",
+] as const;
+
 export type WorkOrderStatus = (typeof workOrderStatuses)[number];
+export type ActiveWorkOrderStatus = (typeof activeWorkOrderStatuses)[number];
 
 export const dashboardStateFilters = ["all", "open", "closed"] as const;
 export const emergencyFilters = ["all", "emergency", "standard"] as const;

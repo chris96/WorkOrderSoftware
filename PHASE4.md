@@ -1,13 +1,18 @@
 # Phase 4
 
 ## Checklist
-- [ ] Add a closeout entry point to the staff work order detail page
-- [ ] Build a staff-only closeout form
-- [ ] Add a required repair summary field
-- [ ] Add optional closeout fields for:
-  - [ ] materials used
-  - [ ] internal completion notes
-- [ ] Add closeout photo upload support
+- [x] Add a closeout entry point to the staff work order detail page
+  - Satisfied by the new Phase 4 closeout panel on `/staff/work-orders/[id]`.
+- [x] Build a staff-only closeout form
+  - Satisfied by the UI framework in the staff request detail page. Submission is not wired yet.
+- [x] Add a required repair summary field
+  - Satisfied by the closeout form framework, which now includes the required repair summary field in the staff UI.
+- [x] Add optional closeout fields for:
+  - [x] materials used
+  - [x] internal completion notes
+  - Satisfied by the closeout form framework fields. Persistence is not wired yet.
+- [x] Add closeout photo upload support
+  - Satisfied at the UI level by the closeout photo picker and preview list. Storage upload is still pending.
 - [ ] Upload closeout photos to Supabase Storage
 - [ ] Save closeout photo metadata in `work_order_photos`
 - [ ] Save closeout completion data on the work order, including:
@@ -21,8 +26,10 @@
 - [ ] Restrict closeout to valid non-closed statuses only
 - [ ] Remove closed requests from the open queue and surface them in the closed view
 - [ ] Show closeout summary and closeout photos clearly in the staff UI
-- [ ] Keep intake photos and closeout photos clearly separated in the UI
-- [ ] Put closed requests into a read-only completed state unless a future reopen flow is added
+- [x] Keep intake photos and closeout photos clearly separated in the UI
+  - Satisfied by separate intake-photo and closeout-photo sections on the staff request detail page.
+- [x] Put closed requests into a read-only completed state unless a future reopen flow is added
+  - Satisfied at the UI-framework level by the closeout panel switching to a read-only placeholder state for already-closed requests.
 - [ ] Clean up partial closeout failures so file uploads, metadata, and timeline events do not get out of sync
 - [ ] Verify closeout data is saved correctly in Supabase
 - [ ] Test closeout workflow end to end
