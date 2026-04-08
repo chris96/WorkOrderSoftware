@@ -40,8 +40,10 @@
   - Satisfied by the closeout panel switching into a read-only completed summary after the request is closed.
 - [x] Clean up partial closeout failures so file uploads, metadata, and timeline events do not get out of sync
   - Satisfied by cleanup and rollback behavior in the closeout route when uploads, metadata inserts, or timeline events fail.
-- [ ] Verify closeout data is saved correctly in Supabase
-- [ ] Test closeout workflow end to end
+- [x] Verify closeout data is saved correctly in Supabase
+  - Satisfied by manual verification in Supabase after closeout testing, including the saved closeout fields, closeout photos, and timeline event data.
+- [x] Test closeout workflow end to end
+  - Satisfied by manual end-to-end testing through the staff portal, including closing a request and confirming the expected completed-state behavior.
 
 ## Implementation Plan
 
