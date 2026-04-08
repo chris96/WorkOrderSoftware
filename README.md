@@ -139,6 +139,9 @@ Deliverables:
 - PDF repair report generation
 - Completion email template
 - Report storage and metadata tracking
+- Staff-visible report generation and delivery status
+- Ability to regenerate or resend if delivery fails
+- Harden the closeout success experience so staff do not remain on a filled closeout form after a successful submission
 
 Report contents:
 - Tenant and unit information
@@ -147,10 +150,14 @@ Report contents:
 - Repair summary
 - Closeout date
 - Closeout photos
+- Closing staff user if included in the v1 report design
 
 Behavior:
 - Closing a request generates a report
-- The tenant receives a completion email with the report attached or linked
+- The tenant receives a completion email with a secure report link
+- Internal staff-only notes never appear in tenant-facing reports or emails
+- Staff can review report status and retry generation or delivery if needed
+- After a successful closeout, the staff workflow should clear the closeout form state or redirect to a dedicated success view so the UI does not appear ready to submit the same closeout again
 
 Success criteria:
 - Report generation works reliably
@@ -235,6 +242,7 @@ Stores generated PDF report metadata and delivery status.
 - A closeout must record which staff user completed the work
 - A request cannot be closed again once it is already closed unless a future admin workflow explicitly allows reopening
 - A closeout should generate a tenant-facing completion report
+- Internal staff-only notes must never be included in tenant-facing reports or completion emails
 
 ## Testing Checklist
 - Tenant submits a standard request successfully
