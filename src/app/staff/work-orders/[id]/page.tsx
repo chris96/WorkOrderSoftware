@@ -10,6 +10,7 @@ import {
   type WorkOrderStatus,
 } from "@/lib/work-orders";
 
+import { CloseoutForm } from "./closeout-form";
 import { InternalNoteForm } from "./internal-note-form";
 import { WorkOrderControls } from "./work-order-controls";
 
@@ -21,9 +22,13 @@ type WorkOrderDetailRow = {
   assigned_user_id: string | null;
   category: string;
   closed_at: string | null;
+  closed_by_user_id: string | null;
+  closeout_internal_notes: string | null;
   description: string;
   id: string;
   is_emergency: boolean;
+  materials_used: string | null;
+  repair_summary: string | null;
   status: WorkOrderStatus;
   submitted_at: string;
   tenant_email: string;
@@ -36,6 +41,7 @@ type WorkOrderPhotoRow = {
   content_type: string | null;
   created_at: string;
   id: string;
+  photo_type: "intake" | "closeout";
   storage_bucket: string;
   storage_path: string;
 };
@@ -122,15 +128,14 @@ export default async function StaffWorkOrderDetailPage({
       supabase
         .from("work_orders")
         .select(
-          "id, unit_id, assigned_user_id, tenant_name, tenant_email, tenant_phone, category, description, status, is_emergency, submitted_at, closed_at"
+          "id, unit_id, assigned_user_id, tenant_name, tenant_email, tenant_phone, category, description, status, is_emergency, submitted_at, closed_at, closed_by_user_id, repair_summary, materials_used, closeout_internal_notes"
         )
         .eq("id", id)
         .single(),
       supabase
         .from("work_order_photos")
-        .select("id, storage_bucket, storage_path, content_type, created_at")
+        .select("id, storage_bucket, storage_path, content_type, created_at, photo_type")
         .eq("work_order_id", id)
-        .eq("photo_type", "intake")
         .order("created_at", { ascending: true }),
       supabase
         .from("work_order_events")
@@ -176,10 +181,13 @@ export default async function StaffWorkOrderDetailPage({
   const assignedUser = workOrder.assigned_user_id
     ? staffUserMap.get(workOrder.assigned_user_id)
     : null;
+  const closedByUser = workOrder.closed_by_user_id
+    ? staffUserMap.get(workOrder.closed_by_user_id)
+    : null;
 
-  const intakePhotos = (photosResult.data ?? []) as WorkOrderPhotoRow[];
+  const allPhotos = (photosResult.data ?? []) as WorkOrderPhotoRow[];
   const photoLinks = await Promise.all(
-    intakePhotos.map(async (photo) => {
+    allPhotos.map(async (photo) => {
       const { data } = await supabase.storage
         .from(photo.storage_bucket)
         .createSignedUrl(photo.storage_path, 60 * 60);
@@ -189,6 +197,10 @@ export default async function StaffWorkOrderDetailPage({
         signedUrl: data?.signedUrl ?? null,
       };
     })
+  );
+  const intakePhotoLinks = photoLinks.filter((photo) => photo.photo_type === "intake");
+  const closeoutPhotoLinks = photoLinks.filter(
+    (photo) => photo.photo_type === "closeout"
   );
 
   const timelineEvents = (eventsResult.data ?? []) as WorkOrderEventRow[];
@@ -323,7 +335,7 @@ export default async function StaffWorkOrderDetailPage({
                 </div>
               </div>
 
-              {photoLinks.length === 0 ? (
+              {intakePhotoLinks.length === 0 ? (
                 <div className="mt-6 rounded-[1.75rem] border border-dashed border-white/10 bg-black/20 px-6 py-8 text-center">
                   <p className="text-lg font-medium text-white">
                     No intake photos were uploaded.
@@ -335,13 +347,71 @@ export default async function StaffWorkOrderDetailPage({
                 </div>
               ) : (
                 <div className="mt-6 grid gap-4 md:grid-cols-2">
-                  {photoLinks.map((photo, index) => (
+                  {intakePhotoLinks.map((photo, index) => (
                     <article
                       key={photo.id}
                       className="rounded-[1.5rem] border border-white/10 bg-black/20 p-5"
                     >
                       <p className="text-sm font-medium text-white">
                         Intake photo {index + 1}
+                      </p>
+                      <p className="mt-2 text-sm leading-7 text-stone-300">
+                        Uploaded {formatWorkOrderDateTime(photo.created_at)}
+                      </p>
+                      <p className="text-sm leading-7 text-stone-400">
+                        {photo.content_type || "Unknown file type"}
+                      </p>
+                      {photo.signedUrl ? (
+                        <a
+                          href={photo.signedUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="mt-4 inline-flex items-center justify-center rounded-full border border-white/15 px-4 py-2 text-sm font-medium text-white transition hover:border-white/30 hover:bg-white/5"
+                        >
+                          Open Photo
+                        </a>
+                      ) : (
+                        <p className="mt-4 text-sm text-stone-500">
+                          Signed preview link unavailable.
+                        </p>
+                      )}
+                    </article>
+                  ))}
+                </div>
+              )}
+            </section>
+
+            <section className="rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-2xl shadow-black/30 backdrop-blur md:p-8">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <p className="text-sm uppercase tracking-[0.25em] text-stone-400">
+                    Closeout Photos
+                  </p>
+                  <h2 className="mt-2 text-3xl font-semibold tracking-tight text-white">
+                    Completion attachments
+                  </h2>
+                </div>
+              </div>
+
+              {closeoutPhotoLinks.length === 0 ? (
+                <div className="mt-6 rounded-[1.75rem] border border-dashed border-white/10 bg-black/20 px-6 py-8 text-center">
+                  <p className="text-lg font-medium text-white">
+                    No closeout photos yet.
+                  </p>
+                  <p className="mt-3 text-sm leading-7 text-stone-400">
+                    Once Phase 4 closeout is wired, after-repair photos will appear
+                    here in a section separate from the original intake images.
+                  </p>
+                </div>
+              ) : (
+                <div className="mt-6 grid gap-4 md:grid-cols-2">
+                  {closeoutPhotoLinks.map((photo, index) => (
+                    <article
+                      key={photo.id}
+                      className="rounded-[1.5rem] border border-white/10 bg-black/20 p-5"
+                    >
+                      <p className="text-sm font-medium text-white">
+                        Closeout photo {index + 1}
                       </p>
                       <p className="mt-2 text-sm leading-7 text-stone-300">
                         Uploaded {formatWorkOrderDateTime(photo.created_at)}
@@ -422,6 +492,32 @@ export default async function StaffWorkOrderDetailPage({
           </section>
 
           <aside className="space-y-8">
+            <section className="rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-2xl shadow-black/30 backdrop-blur md:p-8">
+              <p className="text-sm uppercase tracking-[0.25em] text-stone-400">
+                Closeout Workflow
+              </p>
+              <h2 className="mt-2 text-3xl font-semibold tracking-tight text-white">
+                Repair completion
+              </h2>
+              <p className="mt-3 text-sm leading-7 text-stone-400">
+                This Phase 4 panel is where staff will finish the repair, capture
+                the required summary, and attach after-work photos before the
+                request moves into a completed state.
+              </p>
+
+              <div className="mt-6">
+                <CloseoutForm
+                  closedAt={formatWorkOrderDateTime(workOrder.closed_at)}
+                  closedByName={closedByUser?.fullName ?? null}
+                  completionNotes={workOrder.closeout_internal_notes}
+                  isClosed={workOrder.status === "closed"}
+                  materialsUsed={workOrder.materials_used}
+                  repairSummary={workOrder.repair_summary}
+                  workOrderId={workOrder.id}
+                />
+              </div>
+            </section>
+
             <section className="rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-2xl shadow-black/30 backdrop-blur md:p-8">
               <p className="text-sm uppercase tracking-[0.25em] text-stone-400">
                 Manage Request

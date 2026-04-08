@@ -3,7 +3,11 @@
 import { useRouter } from "next/navigation";
 import { FormEvent, useState, useTransition } from "react";
 
-import { formatWorkOrderStatus, type WorkOrderStatus } from "@/lib/work-orders";
+import {
+  activeWorkOrderStatuses,
+  formatWorkOrderStatus,
+  type WorkOrderStatus,
+} from "@/lib/work-orders";
 
 type StaffOption = {
   fullName: string;
@@ -86,17 +90,18 @@ export function WorkOrderControls({
           value={selectedStatus}
           onChange={(event) => setSelectedStatus(event.target.value as WorkOrderStatus)}
         >
-          {(["new", "in_progress", "waiting_on_parts", "closed"] as WorkOrderStatus[]).map(
-            (statusOption) => (
-              <option
-                key={statusOption}
-                value={statusOption}
-                className="bg-white text-stone-950"
-              >
-                {formatWorkOrderStatus(statusOption)}
-              </option>
-            )
-          )}
+          {(status === "closed"
+            ? (["closed"] as WorkOrderStatus[])
+            : [...activeWorkOrderStatuses]
+          ).map((statusOption) => (
+            <option
+              key={statusOption}
+              value={statusOption}
+              className="bg-white text-stone-950"
+            >
+              {formatWorkOrderStatus(statusOption)}
+            </option>
+          ))}
         </select>
       </div>
 

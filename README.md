@@ -116,11 +116,16 @@ Deliverables:
 - Optional material or note fields
 - Closeout photo uploads
 - Request completion timestamp
+- Record which staff user completed the repair
 
 Behavior:
 - Only staff can close a request
+- A request can only be closed from a valid active status
 - Closing a request stores notes, photos, and completion metadata
+- Closing a request stores who completed the repair
 - Closeout actions create timeline events
+- Intake photos and closeout photos remain clearly separated in staff review
+- Closed requests show the repair summary and closeout photos in the staff interface
 
 Success criteria:
 - Staff can close a request with notes and photos
@@ -227,6 +232,8 @@ Stores generated PDF report metadata and delivery status.
 - Emergency requests also send SMS and voice notifications
 - Only staff users can update or close a request
 - A closed request must include a repair summary
+- A closeout must record which staff user completed the work
+- A request cannot be closed again once it is already closed unless a future admin workflow explicitly allows reopening
 - A closeout should generate a tenant-facing completion report
 
 ## Testing Checklist

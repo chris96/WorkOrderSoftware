@@ -93,6 +93,18 @@ export async function PATCH(request: Request, context: RouteContext) {
 
     const nextStatus = parsed.data.status;
     const nextAssignedUserId = parsed.data.assignedUserId;
+
+    if (nextStatus === "closed" && existingWorkOrder.status !== "closed") {
+      return NextResponse.json(
+        {
+          ok: false,
+          message:
+            "Use the closeout workflow to close a request with the required repair summary.",
+        },
+        { status: 400 }
+      );
+    }
+
     const statusChanged = existingWorkOrder.status !== nextStatus;
     const assignmentChanged =
       (existingWorkOrder.assigned_user_id ?? null) !== (nextAssignedUserId ?? null);
