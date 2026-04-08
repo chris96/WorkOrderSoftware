@@ -17,13 +17,12 @@ export default function Home() {
             </p>
             <div className="space-y-4">
               <h1 className="max-w-2xl text-4xl font-semibold tracking-tight text-white md:text-6xl">
-                Phase 4 is currently in progress for the work order system.
+                Phase 4 is complete for the work order system.
               </h1>
               <p className="max-w-2xl text-lg leading-8 text-stone-300">
-                Tenant intake and the core staff workflow are live, and we are now
-                building the repair closeout experience. Staff will soon be able to
-                complete repairs with closeout summaries, after-work photos, and a
-                proper completed-state workflow.
+                Tenant intake, the staff dashboard, and the closeout workflow are
+                now live. Staff can complete repairs with summaries, closeout
+                photos, and a proper completed-state workflow.
               </p>
             </div>
             <div className="flex flex-wrap gap-3">
@@ -48,7 +47,7 @@ export default function Home() {
               <li>Tenant request intake is live with validation and unit-backed selection.</li>
               <li>Requests can create work orders, upload intake photos, and log submission events.</li>
               <li>Staff can sign in, review request details, add internal notes, update status, and assign work orders.</li>
-              <li>Phase 4 closeout UI is now being built into the staff repair workflow.</li>
+              <li>Staff can close requests with repair summaries, completion notes, and closeout photos.</li>
             </ul>
           </section>
         </div>
@@ -63,7 +62,7 @@ export default function Home() {
               <li>Protected staff portal with bootstrap and sign-in flow</li>
               <li>Filterable staff dashboard for open and recently closed work orders</li>
               <li>Request detail pages with timeline, intake photos, internal notes, assignment, and status controls</li>
-              <li>Phase 3 staff dashboard workflow completed and in use</li>
+              <li>Phase 4 closeout workflow completed and in use</li>
             </ul>
           </div>
 
@@ -72,10 +71,10 @@ export default function Home() {
               Coming Next
             </h2>
             <ul className="mt-4 space-y-3 text-sm leading-7 text-stone-300">
-              <li>Closeout workflow submission, completion metadata, and closed-state behavior</li>
               <li>Report generation and tenant completion emails</li>
               <li>Tenant portal history and request visibility improvements</li>
               <li>Email notifications and emergency escalation at the end of the roadmap</li>
+              <li>Phase 5 repair reports and tenant completion delivery</li>
             </ul>
           </div>
         </section>
@@ -83,7 +82,7 @@ export default function Home() {
         <footer className="mt-10 flex flex-col gap-2 border-t border-white/10 pt-6 text-sm text-stone-400 md:flex-row md:items-center md:justify-between">
           <p>This application is currently under development.</p>
           <p>
-            Status: Phase 4 in progress as of {currentDate}
+            Status: Phase 4 complete as of {currentDate}
           </p>
         </footer>
       </div>
