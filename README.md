@@ -75,10 +75,14 @@ Build the authenticated building staff side.
 Deliverables:
 - Harden the tenant intake completion flow so a successful submit does not leave the form populated and easy to resubmit accidentally
 - Add duplicate-submission protection for tenant requests, ideally by redirecting or resetting after success and guarding the backend against double-submit behavior
+- Add a bootstrap path for the initial staff users
 - Staff sign-in
 - Initial roles for `super` and `backup`
 - Dashboard showing open and recently closed work orders
+- Basic dashboard filtering for operational review
 - Request detail page with photos, tenant info, status, and timeline
+- Internal staff-only notes on work orders
+- Ability to assign work orders to staff
 - Ability to change status
 
 Recommended statuses:
@@ -91,6 +95,7 @@ Behavior:
 - After a tenant request is submitted successfully, the UI should not encourage a second identical submission from the same filled-out form state
 - Duplicate form submissions should be prevented both in the frontend flow and in the backend handling
 - Staff users can view and manage all requests
+- Internal notes must remain visible only to staff
 - Access to staff pages is blocked for non-staff users
 - Status changes create timeline events
 
@@ -99,6 +104,7 @@ Success criteria:
 - A double click or repeated submit action does not create duplicate work orders unintentionally
 - Staff can log in and manage requests
 - Request details are easy to review
+- Staff can assign work orders and add internal notes safely
 - Status updates are saved and visible
 
 ### Phase 4: Closeout Workflow

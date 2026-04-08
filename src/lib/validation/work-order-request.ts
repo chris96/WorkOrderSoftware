@@ -11,8 +11,10 @@ export const workOrderCategories = [
   "General maintenance",
 ] as const;
 
-const phonePattern =
-  /^[+]?[(]?[0-9]{3}[)]?[-\s./0-9]*$/;
+function hasTenDigitPhoneNumber(value: string) {
+  const digitsOnly = value.replace(/\D/g, "");
+  return digitsOnly.length === 10;
+}
 
 const workOrderRequestBaseSchema = z.object({
   unit: z.string().trim().min(1, "Please select your unit."),
@@ -27,8 +29,8 @@ const workOrderRequestBaseSchema = z.object({
     .trim()
     .optional()
     .refine(
-      (value) => !value || phonePattern.test(value),
-      "Please enter a valid phone number."
+      (value) => !value || hasTenDigitPhoneNumber(value),
+      "Please enter a 10-digit phone number."
     ),
   description: z
     .string()

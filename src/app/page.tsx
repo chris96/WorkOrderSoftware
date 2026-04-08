@@ -5,7 +5,7 @@ export default function Home() {
     month: "long",
     day: "numeric",
     year: "numeric",
-  }).format(new Date("2026-04-06T12:00:00-04:00"));
+  }).format(new Date("2026-04-07T12:00:00-04:00"));
 
   return (
     <main className="flex flex-1 items-center justify-center px-6 py-16">
@@ -13,16 +13,16 @@ export default function Home() {
         <div className="grid gap-12 md:grid-cols-[1.2fr_0.8fr] md:items-end">
           <section className="space-y-6">
             <p className="text-sm uppercase tracking-[0.3em] text-amber-300">
-              Phase 2 Tenant Intake
+              Phase 3 Staff Dashboard
             </p>
             <div className="space-y-4">
               <h1 className="max-w-2xl text-4xl font-semibold tracking-tight text-white md:text-6xl">
                 Work order software for a 90-unit building.
               </h1>
               <p className="max-w-2xl text-lg leading-8 text-stone-300">
-                The tenant intake foundation is now live. Residents can submit
-                maintenance requests with contact details, urgency, and optional
-                photos, and those requests are being written into our database.
+                Phase 3 is now underway. The tenant intake foundation is live,
+                and the next wave of work focuses on hardening submissions and
+                building the staff-side operational tools.
               </p>
             </div>
             <div className="flex flex-wrap gap-3">
@@ -30,7 +30,7 @@ export default function Home() {
                 Submit Request
               </Link>
               <Link className="rounded-full border border-white/15 px-5 py-3 text-sm font-medium text-white transition hover:border-white/30 hover:bg-white/5" href="/staff">
-                Staff Area
+                Staff Portal
               </Link>
               <Link className="rounded-full border border-white/15 px-5 py-3 text-sm font-medium text-white transition hover:border-white/30 hover:bg-white/5" href="/tenant">
                 Tenant Portal
@@ -79,7 +79,7 @@ export default function Home() {
         <footer className="mt-10 flex flex-col gap-2 border-t border-white/10 pt-6 text-sm text-stone-400 md:flex-row md:items-center md:justify-between">
           <p>This application is currently under development.</p>
           <p>
-            Status: Phase 2 complete as of {currentDate}
+            Status: Phase 3 in progress as of {currentDate}
           </p>
         </footer>
       </div>
