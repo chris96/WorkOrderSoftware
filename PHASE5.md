@@ -23,6 +23,7 @@
 - [ ] Allow staff to regenerate the report if needed
 - [ ] Allow staff to resend the completion email if needed
 - [ ] Harden the closeout success experience so staff do not remain on a filled closeout form after a successful close
+- [ ] Reduce unnecessary Supabase usage on public routes by caching stable reference data such as the tenant unit list
 - [ ] Keep internal staff-only notes out of the tenant-facing report and email
 - [ ] Verify report content matches the closed work order
 - [ ] Verify the completion email is delivered successfully
@@ -97,6 +98,7 @@
   - a resend or retry is needed
 - Keep retries possible without generating duplicate records unnecessarily
 - Define fallback behavior if report generation cannot fetch one or more closeout photos cleanly
+- Reduce avoidable background Supabase usage where possible, especially on public routes that currently query stable data on every request
 
 ### 7. Staff visibility
 - Show report-generation status on the staff side
@@ -113,7 +115,12 @@
 - Avoid exposing internal staff-only notes in the tenant report unless intentionally allowed
 - Include only tenant-appropriate content in the final report and email
 
-### 9. Testing
+### 9. Performance and usage control
+- Cache stable public reference data such as the unit list used by `/submit-request`
+- Avoid unnecessary database queries on public pages when the underlying data changes infrequently
+- Treat Supabase usage control as part of production hardening for this phase because the app is now live on the public internet
+
+### 10. Testing
 - Generate a report for a closed work order with no closeout photos
 - Generate a report for a closed work order with closeout photos
 - Verify the report includes the expected tenant, unit, request, and repair data
@@ -126,6 +133,7 @@
 - Verify duplicate generation attempts do not create inconsistent report records
 - Verify staff can open the generated report from the staff side
 - Verify staff can regenerate the report and resend the completion email
+- Verify cached public reference data still updates correctly when intentionally changed
 - Verify the closeout success experience clears the form or redirects away from the filled form state
 - Verify internal staff-only notes do not appear in the report or email
 - Verify the end-to-end closed-request-to-report flow works reliably
