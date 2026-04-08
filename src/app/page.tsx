@@ -5,7 +5,7 @@ export default function Home() {
     month: "long",
     day: "numeric",
     year: "numeric",
-  }).format(new Date("2026-04-07T12:00:00-04:00"));
+  }).format(new Date("2026-04-08T12:00:00-04:00"));
 
   return (
     <main className="flex flex-1 items-center justify-center px-6 py-16">
@@ -17,12 +17,12 @@ export default function Home() {
             </p>
             <div className="space-y-4">
               <h1 className="max-w-2xl text-4xl font-semibold tracking-tight text-white md:text-6xl">
-                Work order software for a 90-unit building.
+                Phase 3 is complete for the work order system.
               </h1>
               <p className="max-w-2xl text-lg leading-8 text-stone-300">
-                Phase 3 is now underway. The tenant intake foundation is live,
-                and the next wave of work focuses on hardening submissions and
-                building the staff-side operational tools.
+                Tenant intake and the core staff workflow are now live.
+                Residents can submit requests, and staff can sign in, review
+                work orders, add internal notes, manage status, and assign work.
               </p>
             </div>
             <div className="flex flex-wrap gap-3">
@@ -46,6 +46,7 @@ export default function Home() {
               <li>Phase 1 infrastructure is complete with Vercel and Supabase.</li>
               <li>Tenant request intake is live with validation and unit-backed selection.</li>
               <li>Requests can create work orders, upload intake photos, and log submission events.</li>
+              <li>Staff can sign in, review request details, add internal notes, update status, and assign work orders.</li>
             </ul>
           </section>
         </div>
@@ -57,9 +58,9 @@ export default function Home() {
             </h2>
             <ul className="mt-4 space-y-3 text-sm leading-7 text-stone-300">
               <li>Public maintenance request form for tenants</li>
-              <li>Photo uploads into our database storage</li>
-              <li>Work order creation and submission timeline logging</li>
-              <li>Inline success confirmation after request submission</li>
+              <li>Protected staff portal with bootstrap and sign-in flow</li>
+              <li>Filterable staff dashboard for open and recently closed work orders</li>
+              <li>Request detail pages with timeline, intake photos, internal notes, assignment, and status controls</li>
             </ul>
           </div>
 
@@ -68,10 +69,10 @@ export default function Home() {
               Coming Next
             </h2>
             <ul className="mt-4 space-y-3 text-sm leading-7 text-stone-300">
-              <li>Phase 3 notification flow with tenant email confirmation and emergency escalation</li>
-              <li>Phase 4 staff dashboard for the super and backup users</li>
-              <li>Phase 5 closeout workflow for repairs, notes, and completion photos</li>
-              <li>Phase 6 report generation and tenant completion emails</li>
+              <li>Closeout workflow for repairs, completion notes, and closeout photos</li>
+              <li>Report generation and tenant completion emails</li>
+              <li>Tenant portal history and request visibility improvements</li>
+              <li>Email notifications and emergency escalation at the end of the roadmap</li>
             </ul>
           </div>
         </section>
@@ -79,7 +80,7 @@ export default function Home() {
         <footer className="mt-10 flex flex-col gap-2 border-t border-white/10 pt-6 text-sm text-stone-400 md:flex-row md:items-center md:justify-between">
           <p>This application is currently under development.</p>
           <p>
-            Status: Phase 3 in progress as of {currentDate}
+            Status: Phase 3 complete as of {currentDate}
           </p>
         </footer>
       </div>
