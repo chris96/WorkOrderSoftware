@@ -13,16 +13,17 @@ export default function Home() {
         <div className="grid gap-12 md:grid-cols-[1.2fr_0.8fr] md:items-end">
           <section className="space-y-6">
             <p className="text-sm uppercase tracking-[0.3em] text-amber-300">
-              Phase 4 Closeout Workflow
+              Phase 5 Repair Reports
             </p>
             <div className="space-y-4">
               <h1 className="max-w-2xl text-4xl font-semibold tracking-tight text-white md:text-6xl">
-                Phase 4 is complete for the work order system.
+                Phase 5 is now in progress for the work order system.
               </h1>
               <p className="max-w-2xl text-lg leading-8 text-stone-300">
-                Tenant intake, the staff dashboard, and the closeout workflow are
-                now live. Staff can complete repairs with summaries, closeout
-                photos, and a proper completed-state workflow.
+                Tenant intake, staff operations, and the closeout workflow are
+                live. We are now building the report-generation layer so completed
+                repairs can produce a formal tenant-facing repair report and
+                completion delivery flow.
               </p>
             </div>
             <div className="flex flex-wrap gap-3">
@@ -48,6 +49,7 @@ export default function Home() {
               <li>Requests can create work orders, upload intake photos, and log submission events.</li>
               <li>Staff can sign in, review request details, add internal notes, update status, and assign work orders.</li>
               <li>Staff can close requests with repair summaries, completion notes, and closeout photos.</li>
+              <li>Phase 5 planning is now in place for repair reports and tenant completion delivery.</li>
             </ul>
           </section>
         </div>
@@ -71,10 +73,10 @@ export default function Home() {
               Coming Next
             </h2>
             <ul className="mt-4 space-y-3 text-sm leading-7 text-stone-300">
-              <li>Report generation and tenant completion emails</li>
+              <li>PDF repair report generation for closed work orders</li>
+              <li>Tenant completion email delivery with the final repair report</li>
               <li>Tenant portal history and request visibility improvements</li>
               <li>Email notifications and emergency escalation at the end of the roadmap</li>
-              <li>Phase 5 repair reports and tenant completion delivery</li>
             </ul>
           </div>
         </section>
@@ -82,7 +84,7 @@ export default function Home() {
         <footer className="mt-10 flex flex-col gap-2 border-t border-white/10 pt-6 text-sm text-stone-400 md:flex-row md:items-center md:justify-between">
           <p>This application is currently under development.</p>
           <p>
-            Status: Phase 4 complete as of {currentDate}
+            Status: Phase 5 in progress as of {currentDate}
           </p>
         </footer>
       </div>
