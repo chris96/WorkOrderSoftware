@@ -38,12 +38,16 @@
   - Satisfied for the dashboard view by the new empty states on the open and recently closed sections. Request-detail empty-state handling is still pending with the detail page itself.
 - [x] Verify staff-only access protection
   - Satisfied by protecting `/staff` with route-level session checks and a server-side staff-user requirement before rendering the portal.
-- [ ] Verify internal notes are visible only to staff
-- [ ] Verify status changes create timeline events
-- [ ] Verify assignment changes are saved correctly
+- [x] Verify internal notes are visible only to staff
+  - Verified by implementation review: internal notes are created only through staff-authenticated routes and rendered only on the protected `/staff/work-orders/[id]` detail page.
+- [x] Verify status changes create timeline events
+  - Verified by implementation review: status updates insert `status_changed` events into `work_order_events` with `from_status` and `to_status` metadata.
+- [x] Verify assignment changes are saved correctly
+  - Verified by implementation review: assignment changes update `assigned_user_id` on the work order and create a staff-only assignment event in `work_order_events`.
 - [x] Test duplicate-submit prevention after a successful tenant request
   - Satisfied by manual verification of the hardened submit flow and backend duplicate detection behavior.
 - [ ] Test staff dashboard flow end to end
+  - Still pending a live signed-in verification pass through the deployed staff portal.
 
 ## Implementation Plan
 
