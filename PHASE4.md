@@ -4,33 +4,42 @@
 - [x] Add a closeout entry point to the staff work order detail page
   - Satisfied by the new Phase 4 closeout panel on `/staff/work-orders/[id]`.
 - [x] Build a staff-only closeout form
-  - Satisfied by the UI framework in the staff request detail page. Submission is not wired yet.
+  - Satisfied by the live closeout form on the staff request detail page.
 - [x] Add a required repair summary field
-  - Satisfied by the closeout form framework, which now includes the required repair summary field in the staff UI.
+  - Satisfied by the live closeout form and server-side closeout validation.
 - [x] Add optional closeout fields for:
   - [x] materials used
   - [x] internal completion notes
-  - Satisfied by the closeout form framework fields. Persistence is not wired yet.
+  - Satisfied by the live closeout form and persisted closeout fields on `work_orders`.
 - [x] Add closeout photo upload support
-  - Satisfied at the UI level by the closeout photo picker and preview list. Storage upload is still pending.
-- [ ] Upload closeout photos to Supabase Storage
-- [ ] Save closeout photo metadata in `work_order_photos`
-- [ ] Save closeout completion data on the work order, including:
-  - [ ] closed status
-  - [ ] completion timestamp
-  - [ ] closed by staff user
-  - [ ] repair summary
-  - [ ] optional material or note fields
-- [ ] Create closeout timeline events in `work_order_events`
-- [ ] Restrict closeout actions to staff users only
-- [ ] Restrict closeout to valid non-closed statuses only
-- [ ] Remove closed requests from the open queue and surface them in the closed view
-- [ ] Show closeout summary and closeout photos clearly in the staff UI
+  - Satisfied by the live form, closeout photo picker, and closeout submission route.
+- [x] Upload closeout photos to Supabase Storage
+  - Satisfied by `/api/staff/work-orders/[id]/closeout`, which uploads closeout photos under the `closeout/` path in the `work-order-photos` bucket.
+- [x] Save closeout photo metadata in `work_order_photos`
+  - Satisfied by the closeout route, which inserts `photo_type = closeout` records after successful upload.
+- [x] Save closeout completion data on the work order, including:
+  - [x] closed status
+  - [x] completion timestamp
+  - [x] closed by staff user
+  - [x] repair summary
+  - [x] optional material or note fields
+  - Satisfied by the closeout route plus the Phase 4 schema migration adding the necessary `work_orders` fields.
+- [x] Create closeout timeline events in `work_order_events`
+  - Satisfied by the closeout route inserting a `closed` event with closeout metadata.
+- [x] Restrict closeout actions to staff users only
+  - Satisfied by the protected staff detail page and the staff-authenticated closeout API route.
+- [x] Restrict closeout to valid non-closed statuses only
+  - Satisfied by blocking closeout on already-closed requests and removing generic status-based closing from the standard status control.
+- [x] Remove closed requests from the open queue and surface them in the closed view
+  - Satisfied by the closeout flow setting the work order status to `closed`, which moves the request into the closed dashboard logic.
+- [x] Show closeout summary and closeout photos clearly in the staff UI
+  - Satisfied by the read-only closeout summary state and the separate closeout-photo section on the staff request detail page.
 - [x] Keep intake photos and closeout photos clearly separated in the UI
   - Satisfied by separate intake-photo and closeout-photo sections on the staff request detail page.
 - [x] Put closed requests into a read-only completed state unless a future reopen flow is added
-  - Satisfied at the UI-framework level by the closeout panel switching to a read-only placeholder state for already-closed requests.
-- [ ] Clean up partial closeout failures so file uploads, metadata, and timeline events do not get out of sync
+  - Satisfied by the closeout panel switching into a read-only completed summary after the request is closed.
+- [x] Clean up partial closeout failures so file uploads, metadata, and timeline events do not get out of sync
+  - Satisfied by cleanup and rollback behavior in the closeout route when uploads, metadata inserts, or timeline events fail.
 - [ ] Verify closeout data is saved correctly in Supabase
 - [ ] Test closeout workflow end to end
 
