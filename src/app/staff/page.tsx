@@ -2,16 +2,29 @@ import Link from "next/link";
 
 import { requireStaffUser } from "@/lib/staff-auth";
 import { createAdminSupabaseClient } from "@/lib/supabase/server";
+import {
+  formatWorkOrderDateTime,
+  formatWorkOrderStatus,
+  getWorkOrderStatusClassName,
+  type WorkOrderStatus,
+} from "@/lib/work-orders";
+import {
+  dashboardFilterSchema,
+  type DashboardFilters,
+} from "@/lib/validation/staff-work-orders";
 
 import { StaffSignOutButton } from "./staff-sign-out-button";
 
+type SearchParams = Promise<Record<string, string | string[] | undefined>>;
+
 type WorkOrderRow = {
+  assigned_user_id: string | null;
   category: string;
   closed_at: string | null;
   description: string;
   id: string;
   is_emergency: boolean;
-  status: "new" | "in_progress" | "waiting_on_parts" | "closed";
+  status: WorkOrderStatus;
   submitted_at: string;
   tenant_email: string;
   tenant_name: string;
@@ -20,50 +33,66 @@ type WorkOrderRow = {
 };
 
 type DashboardWorkOrder = WorkOrderRow & {
+  assignedUserName: string | null;
   unitNumber: string;
 };
 
-function formatDateTime(value: string | null) {
-  if (!value) {
-    return "Not available";
+function readFilterValue(
+  input: string | string[] | undefined
+): string | undefined {
+  if (Array.isArray(input)) {
+    return input[0];
   }
 
-  return new Intl.DateTimeFormat("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: true,
-    timeZone: "America/New_York",
-    timeZoneName: "short",
-  }).format(new Date(value));
+  return input;
 }
 
-function formatStatus(status: DashboardWorkOrder["status"]) {
-  switch (status) {
-    case "in_progress":
-      return "In Progress";
-    case "waiting_on_parts":
-      return "Waiting on Parts";
-    case "closed":
-      return "Closed";
-    default:
-      return "New";
+function parseDashboardFilters(
+  rawParams: Record<string, string | string[] | undefined>
+): DashboardFilters {
+  const parsed = dashboardFilterSchema.safeParse({
+    emergency: readFilterValue(rawParams.emergency),
+    state: readFilterValue(rawParams.state),
+    status: readFilterValue(rawParams.status),
+  });
+
+  if (!parsed.success) {
+    return dashboardFilterSchema.parse({});
   }
+
+  return parsed.data;
 }
 
-function getStatusClassName(status: DashboardWorkOrder["status"]) {
-  switch (status) {
-    case "in_progress":
-      return "border-sky-300/20 bg-sky-400/10 text-sky-100";
-    case "waiting_on_parts":
-      return "border-violet-300/20 bg-violet-400/10 text-violet-100";
-    case "closed":
-      return "border-emerald-300/20 bg-emerald-400/10 text-emerald-100";
-    default:
-      return "border-amber-300/20 bg-amber-300/10 text-amber-100";
+function buildWorkOrderQuery(
+  supabase: ReturnType<typeof createAdminSupabaseClient>,
+  filters: DashboardFilters,
+  state: "open" | "closed"
+) {
+  let query = supabase
+    .from("work_orders")
+    .select(
+      "id, unit_id, assigned_user_id, tenant_name, tenant_email, tenant_phone, category, description, status, is_emergency, submitted_at, closed_at"
+    );
+
+  if (state === "closed") {
+    query = query.eq("status", "closed").order("closed_at", { ascending: false });
+  } else {
+    query = query.neq("status", "closed").order("submitted_at", { ascending: false });
   }
+
+  if (filters.status !== "all") {
+    query = query.eq("status", filters.status);
+  }
+
+  if (filters.emergency === "emergency") {
+    query = query.eq("is_emergency", true);
+  }
+
+  if (filters.emergency === "standard") {
+    query = query.eq("is_emergency", false);
+  }
+
+  return query.limit(state === "closed" ? 8 : 12);
 }
 
 function WorkOrderCard({
@@ -82,9 +111,9 @@ function WorkOrderCard({
               Unit {workOrder.unitNumber}
             </span>
             <span
-              className={`rounded-full border px-3 py-1 text-xs font-medium uppercase tracking-[0.18em] ${getStatusClassName(workOrder.status)}`}
+              className={`rounded-full border px-3 py-1 text-xs font-medium uppercase tracking-[0.18em] ${getWorkOrderStatusClassName(workOrder.status)}`}
             >
-              {formatStatus(workOrder.status)}
+              {formatWorkOrderStatus(workOrder.status)}
             </span>
             {workOrder.is_emergency ? (
               <span className="rounded-full border border-rose-300/20 bg-rose-400/10 px-3 py-1 text-xs font-medium uppercase tracking-[0.18em] text-rose-100">
@@ -105,9 +134,9 @@ function WorkOrderCard({
           <p>
             Request ID: <span className="text-amber-200">{workOrder.id}</span>
           </p>
-          <p>Submitted: {formatDateTime(workOrder.submitted_at)}</p>
+          <p>Submitted: {formatWorkOrderDateTime(workOrder.submitted_at)}</p>
           {showClosedDate ? (
-            <p>Closed: {formatDateTime(workOrder.closed_at)}</p>
+            <p>Closed: {formatWorkOrderDateTime(workOrder.closed_at)}</p>
           ) : null}
         </div>
       </div>
@@ -124,9 +153,11 @@ function WorkOrderCard({
 
         <div className="rounded-[1.25rem] border border-white/10 bg-white/[0.03] p-4 text-sm leading-7 text-stone-300">
           <p className="text-xs uppercase tracking-[0.18em] text-stone-500">
-            Current state
+            Assignment
           </p>
-          <p className="mt-2 font-medium text-white">{formatStatus(workOrder.status)}</p>
+          <p className="mt-2 font-medium text-white">
+            {workOrder.assignedUserName || "Unassigned"}
+          </p>
           <p>
             {workOrder.is_emergency
               ? "Flagged by the tenant as urgent."
@@ -134,14 +165,22 @@ function WorkOrderCard({
           </p>
         </div>
 
-        <div className="rounded-[1.25rem] border border-white/10 bg-white/[0.03] p-4 text-sm leading-7 text-stone-300">
-          <p className="text-xs uppercase tracking-[0.18em] text-stone-500">
-            Next build step
-          </p>
-          <p className="mt-2 font-medium text-white">
-            Detail page, assignment, and status controls
-          </p>
-          <p>Those controls will be layered onto this list in the next pass.</p>
+        <div className="flex flex-col justify-between rounded-[1.25rem] border border-white/10 bg-white/[0.03] p-4 text-sm leading-7 text-stone-300">
+          <div>
+            <p className="text-xs uppercase tracking-[0.18em] text-stone-500">
+              Next step
+            </p>
+            <p className="mt-2 font-medium text-white">
+              Open the full request view
+            </p>
+            <p>Review timeline, notes, photos, assignment, and status actions.</p>
+          </div>
+          <Link
+            href={`/staff/work-orders/${workOrder.id}`}
+            className="mt-4 inline-flex items-center justify-center rounded-full bg-amber-300 px-4 py-2 text-sm font-medium text-stone-950 transition hover:bg-amber-200"
+          >
+            Open Request
+          </Link>
         </div>
       </div>
     </article>
@@ -197,32 +236,33 @@ function DashboardSection({
   );
 }
 
-export default async function StaffPage() {
+export default async function StaffPage({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}) {
   const staffUser = await requireStaffUser();
+  const filters = parseDashboardFilters(await searchParams);
   const supabase = createAdminSupabaseClient();
 
-  const [openResult, closedResult] = await Promise.all([
+  const [openResult, closedResult, staffUsersResult] = await Promise.all([
+    filters.state === "closed"
+      ? Promise.resolve({ data: [], error: null })
+      : buildWorkOrderQuery(supabase, filters, "open"),
+    filters.state === "open"
+      ? Promise.resolve({ data: [], error: null })
+      : buildWorkOrderQuery(supabase, filters, "closed"),
     supabase
-      .from("work_orders")
-      .select(
-        "id, unit_id, tenant_name, tenant_email, tenant_phone, category, description, status, is_emergency, submitted_at, closed_at"
-      )
-      .neq("status", "closed")
-      .order("submitted_at", { ascending: false })
-      .limit(12),
-    supabase
-      .from("work_orders")
-      .select(
-        "id, unit_id, tenant_name, tenant_email, tenant_phone, category, description, status, is_emergency, submitted_at, closed_at"
-      )
-      .eq("status", "closed")
-      .order("closed_at", { ascending: false })
-      .limit(8),
+      .from("users")
+      .select("id, full_name")
+      .eq("is_active", true)
+      .in("role", ["super", "backup"]),
   ]);
 
   const openWorkOrders = (openResult.data ?? []) as WorkOrderRow[];
   const recentlyClosedWorkOrders = (closedResult.data ?? []) as WorkOrderRow[];
-  const dashboardError = openResult.error || closedResult.error;
+  const dashboardError =
+    openResult.error || closedResult.error || staffUsersResult.error;
 
   const unitIds = Array.from(
     new Set(
@@ -245,8 +285,18 @@ export default async function StaffPage() {
     }
   }
 
+  const staffUserMap = new Map<string, string>();
+
+  for (const user of staffUsersResult.data ?? []) {
+    staffUserMap.set(user.id, user.full_name);
+  }
+
   const decorateWorkOrder = (workOrder: WorkOrderRow): DashboardWorkOrder => ({
     ...workOrder,
+    assignedUserName:
+      (workOrder.assigned_user_id &&
+        staffUserMap.get(workOrder.assigned_user_id)) ||
+      null,
     unitNumber:
       (workOrder.unit_id && unitMap.get(workOrder.unit_id)) || "Unknown unit",
   });
@@ -272,10 +322,10 @@ export default async function StaffPage() {
                   Staff operations are now live for {staffUser.fullName}.
                 </h1>
                 <p className="text-lg leading-8 text-stone-300">
-                  This first dashboard pass surfaces active and recently closed
-                  work orders so the building team can review the current queue
-                  before we add filters, detail views, notes, assignment, and
-                  status controls.
+                  The staff workflow now includes a live dashboard and begins to
+                  branch into request-level operations. Filters below can narrow
+                  the queue by state, status, and urgency before you open a
+                  specific work order.
                 </p>
               </div>
             </div>
@@ -345,6 +395,99 @@ export default async function StaffPage() {
             </div>
           </div>
 
+          <form className="mt-8 grid gap-4 rounded-[1.75rem] border border-white/10 bg-black/20 p-5 md:grid-cols-[1fr_1fr_1fr_auto_auto]">
+            <div className="space-y-2">
+              <label htmlFor="state" className="text-sm font-medium text-stone-200">
+                Open vs closed
+              </label>
+              <select
+                id="state"
+                name="state"
+                defaultValue={filters.state}
+                className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-stone-100 outline-none transition focus:border-amber-300/60"
+              >
+                <option value="all" className="bg-white text-stone-950">
+                  All work orders
+                </option>
+                <option value="open" className="bg-white text-stone-950">
+                  Open only
+                </option>
+                <option value="closed" className="bg-white text-stone-950">
+                  Closed only
+                </option>
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="status" className="text-sm font-medium text-stone-200">
+                Status
+              </label>
+              <select
+                id="status"
+                name="status"
+                defaultValue={filters.status}
+                className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-stone-100 outline-none transition focus:border-amber-300/60"
+              >
+                <option value="all" className="bg-white text-stone-950">
+                  Any status
+                </option>
+                <option value="new" className="bg-white text-stone-950">
+                  New
+                </option>
+                <option value="in_progress" className="bg-white text-stone-950">
+                  In Progress
+                </option>
+                <option
+                  value="waiting_on_parts"
+                  className="bg-white text-stone-950"
+                >
+                  Waiting on Parts
+                </option>
+                <option value="closed" className="bg-white text-stone-950">
+                  Closed
+                </option>
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <label
+                htmlFor="emergency"
+                className="text-sm font-medium text-stone-200"
+              >
+                Emergency filter
+              </label>
+              <select
+                id="emergency"
+                name="emergency"
+                defaultValue={filters.emergency}
+                className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-stone-100 outline-none transition focus:border-amber-300/60"
+              >
+                <option value="all" className="bg-white text-stone-950">
+                  All priorities
+                </option>
+                <option value="emergency" className="bg-white text-stone-950">
+                  Emergency only
+                </option>
+                <option value="standard" className="bg-white text-stone-950">
+                  Standard only
+                </option>
+              </select>
+            </div>
+
+            <button
+              type="submit"
+              className="rounded-full bg-amber-300 px-6 py-3 text-sm font-semibold text-stone-950 transition hover:bg-amber-200 md:self-end"
+            >
+              Apply Filters
+            </button>
+            <Link
+              href="/staff"
+              className="inline-flex items-center justify-center rounded-full border border-white/15 px-6 py-3 text-sm font-medium text-white transition hover:border-white/30 hover:bg-white/5 md:self-end"
+            >
+              Reset
+            </Link>
+          </form>
+
           {dashboardError ? (
             <div className="mt-6 rounded-[1.5rem] border border-rose-300/25 bg-rose-400/10 px-5 py-4 text-sm leading-7 text-rose-100">
               The dashboard could not load all work order data yet:{" "}
@@ -353,21 +496,25 @@ export default async function StaffPage() {
           ) : null}
         </section>
 
-        <DashboardSection
-          title="Open Work Orders"
-          description="This queue is designed for fast operational triage. It highlights the newest active requests first while keeping unit, tenant, urgency, and status visible at a glance."
-          workOrders={openDashboardWorkOrders}
-          emptyTitle="No open work orders right now."
-          emptyBody="Once new tenant requests arrive, they will appear here automatically with their unit, contact details, and current status."
-        />
+        {filters.state !== "closed" ? (
+          <DashboardSection
+            title="Open Work Orders"
+            description="This queue is designed for fast operational triage. It keeps unit, tenant, assignment, urgency, and status visible at a glance before you open the full request view."
+            workOrders={openDashboardWorkOrders}
+            emptyTitle="No open work orders match these filters."
+            emptyBody="Try widening the state, status, or emergency filter to bring more requests back into view."
+          />
+        ) : null}
 
-        <DashboardSection
-          title="Recently Closed"
-          description="Closed requests stay visible here so staff can quickly confirm what was finished most recently before the closeout workflow and reporting layers are added."
-          workOrders={closedDashboardWorkOrders}
-          emptyTitle="No closed work orders yet."
-          emptyBody="Completed repairs will appear here once the closeout portion of the workflow is in place and requests begin moving to the closed state."
-        />
+        {filters.state !== "open" ? (
+          <DashboardSection
+            title="Recently Closed"
+            description="Closed requests stay visible here so staff can confirm what finished most recently and still jump into the full history for each request."
+            workOrders={closedDashboardWorkOrders}
+            emptyTitle="No closed work orders match these filters."
+            emptyBody="Try widening the state, status, or emergency filter to bring completed requests back into view."
+          />
+        ) : null}
       </div>
     </main>
   );

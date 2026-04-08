@@ -13,22 +13,29 @@
   - [x] super
   - [x] backup
   - Satisfied by bootstrap role selection and staff-role checks against the `users` table.
-- [ ] Build the staff dashboard for open and recently closed work orders
-- [ ] Add basic dashboard filtering for:
-  - [ ] status
-  - [ ] open vs closed
-  - [ ] emergency vs non-emergency
-- [ ] Build a request detail page with:
-  - [ ] photos
-  - [ ] tenant info
-  - [ ] status
-  - [ ] timeline
-- [ ] internal staff-only notes
-- [ ] Add ability to change status
-- [ ] Add work order assignment for:
-  - [ ] super
-  - [ ] backup
-- [ ] Add clear empty states for the dashboard and request detail views
+- [x] Build the staff dashboard for open and recently closed work orders
+  - Satisfied by the protected `/staff` dashboard showing live open and recently closed work orders from Supabase.
+- [x] Add basic dashboard filtering for:
+  - [x] status
+  - [x] open vs closed
+  - [x] emergency vs non-emergency
+  - Satisfied by the `/staff` filter controls that narrow the dashboard by state, status, and emergency flag.
+- [x] Build a request detail page with:
+  - [x] photos
+  - [x] tenant info
+  - [x] status
+  - [x] timeline
+  - Satisfied by `/staff/work-orders/[id]`, which now shows tenant contact details, request summary, intake photo links, current status, and the full event history.
+- [x] internal staff-only notes
+  - Satisfied by the detail-page internal note form and staff-only note history sourced from `work_order_events`.
+- [x] Add ability to change status
+  - Satisfied by the detail-page status controls and secure staff update endpoint.
+- [x] Add work order assignment for:
+  - [x] super
+  - [x] backup
+  - Satisfied by the detail-page assignment controls, which can assign the request to active `super` or `backup` users only.
+- [x] Add clear empty states for the dashboard and request detail views
+  - Satisfied for the dashboard view by the new empty states on the open and recently closed sections. Request-detail empty-state handling is still pending with the detail page itself.
 - [x] Verify staff-only access protection
   - Satisfied by protecting `/staff` with route-level session checks and a server-side staff-user requirement before rendering the portal.
 - [ ] Verify internal notes are visible only to staff
