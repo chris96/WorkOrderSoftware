@@ -118,7 +118,11 @@ export function CloseoutForm({
       setMessageTone(response.ok && payload.ok ? "success" : "error");
 
       if (response.ok && payload.ok) {
+        setRepairSummaryValue("");
+        setMaterialsUsedValue("");
+        setCompletionNotesValue("");
         setPhotoPreviews([]);
+        setFieldError(null);
         router.refresh();
       }
     } finally {

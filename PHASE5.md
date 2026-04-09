@@ -22,10 +22,10 @@
 - [ ] Allow staff to open the generated report from the staff workflow
 - [ ] Allow staff to regenerate the report if needed
 - [ ] Allow staff to resend the completion email if needed
-- [ ] Harden the closeout success experience so staff do not remain on a filled closeout form after a successful close
-  - Current behavior verified in code: after successful closeout, the form clears selected photos but does not clear the text fields before the page refreshes into the closed-state view.
-  - Phase 5 should tighten this by either clearing the form immediately on success or redirecting to a dedicated closeout success/confirmation view similar to the tenant flow.
-- [ ] Reduce unnecessary Supabase usage on public routes by caching stable reference data such as the tenant unit list
+- [x] Harden the closeout success experience so staff do not remain on a filled closeout form after a successful close
+  - Satisfied by clearing the closeout form state immediately on successful submission before the page refreshes into the closed-state view.
+- [x] Reduce unnecessary Supabase usage on public routes by caching stable reference data such as the tenant unit list
+  - Satisfied by caching the tenant unit list for `/submit-request` and revalidating it on a 1-hour window instead of querying Supabase on every public page load.
 - [ ] Keep internal staff-only notes out of the tenant-facing report and email
 - [ ] Verify report content matches the closed work order
 - [ ] Verify the completion email is delivered successfully
