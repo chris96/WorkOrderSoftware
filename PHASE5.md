@@ -34,7 +34,8 @@
 - [x] Reduce unnecessary Supabase usage on public routes by caching stable reference data such as the tenant unit list
   - Satisfied by caching the tenant unit list for `/submit-request` and revalidating it on a 1-hour window instead of querying Supabase on every public page load.
 - [ ] Keep internal staff-only notes out of the tenant-facing report and email
-- [ ] Verify report content matches the closed work order
+- [x] Verify report content matches the closed work order
+  - Satisfied by a manual smoke test against live Supabase data, confirming that a closed work order could generate a report with the expected stored PDF and matching report metadata.
 - [ ] Verify the completion email is delivered successfully
 - [ ] Test the Phase 5 flow end to end
 
