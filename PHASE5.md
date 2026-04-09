@@ -23,6 +23,8 @@
 - [ ] Allow staff to regenerate the report if needed
 - [ ] Allow staff to resend the completion email if needed
 - [ ] Harden the closeout success experience so staff do not remain on a filled closeout form after a successful close
+  - Current behavior verified in code: after successful closeout, the form clears selected photos but does not clear the text fields before the page refreshes into the closed-state view.
+  - Phase 5 should tighten this by either clearing the form immediately on success or redirecting to a dedicated closeout success/confirmation view similar to the tenant flow.
 - [ ] Reduce unnecessary Supabase usage on public routes by caching stable reference data such as the tenant unit list
 - [ ] Keep internal staff-only notes out of the tenant-facing report and email
 - [ ] Verify report content matches the closed work order
@@ -60,6 +62,7 @@
 ### 3. PDF generation
 - Generate a tenant-facing PDF repair report
 - Keep the layout clear and practical rather than overly decorative
+- Use `@react-pdf/renderer` as the v1 PDF generation library inside the app codebase rather than introducing a separate plugin or external document service
 - Ensure the PDF can render:
   - request header information
   - original issue details
