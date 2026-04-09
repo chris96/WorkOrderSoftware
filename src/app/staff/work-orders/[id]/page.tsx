@@ -242,6 +242,16 @@ export default async function StaffWorkOrderDetailPage({
             </div>
 
             <div className="flex flex-wrap gap-3">
+              {workOrder.status === "closed" ? (
+                <a
+                  href={`/api/staff/work-orders/${workOrder.id}/report`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex rounded-full bg-amber-300 px-5 py-3 text-sm font-medium text-stone-950 transition hover:bg-amber-200"
+                >
+                  Preview Repair Report
+                </a>
+              ) : null}
               <Link
                 href="/staff"
                 className="inline-flex rounded-full border border-white/15 px-5 py-3 text-sm font-medium text-white transition hover:border-white/30 hover:bg-white/5"

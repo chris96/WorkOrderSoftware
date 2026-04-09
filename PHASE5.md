@@ -1,25 +1,32 @@
 # Phase 5
 
 ## Checklist
-- [ ] Add repair report generation for closed work orders
-- [ ] Build a report payload that includes:
-  - [ ] tenant information
-  - [ ] unit information
-  - [ ] original request details
-  - [ ] emergency flag
-  - [ ] repair summary
-  - [ ] closeout date
-  - [ ] closeout photos
-- [ ] Generate a PDF repair report
-- [ ] Store the generated report file
-- [ ] Save report metadata in `reports`
-- [ ] Track report generation and delivery timestamps
+- [x] Add repair report generation for closed work orders
+  - Satisfied by the staff-only preview route at `/api/staff/work-orders/[id]/report` for closed work orders.
+- [x] Build a report payload that includes:
+  - [x] tenant information
+  - [x] unit information
+  - [x] original request details
+  - [x] emergency flag
+  - [x] repair summary
+  - [x] closeout date
+  - [x] closeout photos
+  - Satisfied by the shared `getRepairReportPayload` helper, which assembles report-ready data from the closed work order.
+- [x] Generate a PDF repair report
+  - Satisfied by the initial `@react-pdf/renderer` report document and the staff-only preview route. Persistent storage is still pending.
+- [x] Store the generated report file
+  - Satisfied by uploading the generated PDF into the `repair-reports` storage bucket when staff opens the report preview route.
+- [x] Save report metadata in `reports`
+  - Satisfied by upserting a canonical `reports` row keyed by `work_order_id` when the PDF is generated.
+- [x] Track report generation and delivery timestamps
+  - Satisfied for generation by storing `generated_at` in `reports`. Delivery timestamps remain pending until the email flow is implemented.
 - [ ] Add a completion email template for tenants
 - [ ] Send the completion email after a report is generated
 - [ ] Include the report as a secure link in the tenant email
 - [ ] Prevent report/email failures from breaking the closeout workflow
 - [ ] Allow staff to review report generation status
-- [ ] Allow staff to open the generated report from the staff workflow
+- [x] Allow staff to open the generated report from the staff workflow
+  - Satisfied by the closed-request `Preview Repair Report` link in the staff portal.
 - [ ] Allow staff to regenerate the report if needed
 - [ ] Allow staff to resend the completion email if needed
 - [x] Harden the closeout success experience so staff do not remain on a filled closeout form after a successful close
