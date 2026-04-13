@@ -32,13 +32,16 @@
   - Satisfied by the report delivery status panel on the staff work order detail page.
 - [x] Allow staff to open the generated report from the staff workflow
   - Satisfied by the closed-request `Preview Repair Report` link in the staff portal.
-- [ ] Allow staff to regenerate the report if needed
-- [ ] Allow staff to resend the completion email if needed
+- [x] Allow staff to regenerate the report if needed
+  - Satisfied by the staff-only delivery action at `/api/staff/work-orders/[id]/report/deliver` plus the `Regenerate Report and Resend Email` control in the staff work order view.
+- [x] Allow staff to resend the completion email if needed
+  - Satisfied by the same staff-only delivery action plus the `Resend Completion Email` control in the staff work order view.
 - [x] Harden the closeout success experience so staff do not remain on a filled closeout form after a successful close
   - Satisfied by clearing the closeout form state immediately on successful submission before the page refreshes into the closed-state view.
 - [x] Reduce unnecessary Supabase usage on public routes by caching stable reference data such as the tenant unit list
   - Satisfied by caching the tenant unit list for `/submit-request` and revalidating it on a 1-hour window instead of querying Supabase on every public page load.
-- [ ] Keep internal staff-only notes out of the tenant-facing report and email
+- [x] Keep internal staff-only notes out of the tenant-facing report and email
+  - Satisfied by excluding `closeout_internal_notes` from `getRepairReportPayload` and by only rendering tenant-safe fields in the completion email template.
 - [x] Verify report content matches the closed work order
   - Satisfied by a manual smoke test against live Supabase data, confirming that a closed work order could generate a report with the expected stored PDF and matching report metadata.
 - [x] Verify the completion email is delivered successfully

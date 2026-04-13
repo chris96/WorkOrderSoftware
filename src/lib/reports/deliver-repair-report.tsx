@@ -4,29 +4,47 @@ import { createRepairReportPdfBuffer } from "@/lib/reports/report-storage";
 import { createResendClient } from "@/lib/resend";
 import { createAdminSupabaseClient } from "@/lib/supabase/server";
 
+type DeliveryAction = "closeout" | "regenerate" | "resend";
+
 export type ReportDeliveryResult =
   | {
+      action: DeliveryAction;
+      didRegenerate: boolean;
+      emailMessageId: string | null;
       ok: true;
       deliveryStatus: "sent";
       reportPath: string;
     }
   | {
+      action: DeliveryAction;
+      didRegenerate: boolean;
       ok: false;
       deliveryStatus: "failed";
       error: string;
       reportPath: string;
     };
 
+type ReportRow = {
+  generated_at: string | null;
+  storage_bucket: string;
+  storage_path: string;
+};
+
 const REPORTS_BUCKET = "repair-reports";
 const REPORT_SIGNED_URL_TTL_SECONDS = 60 * 60 * 24 * 7;
 
 export async function deliverRepairReport(
-  workOrderId: string
+  workOrderId: string,
+  options?: {
+    action?: DeliveryAction;
+  }
 ): Promise<ReportDeliveryResult> {
   const supabase = createAdminSupabaseClient();
-  const reportPath = `${workOrderId}/repair-report.pdf`;
+  const action = options?.action ?? "closeout";
+  const defaultReportPath = `${workOrderId}/repair-report.pdf`;
+  let didRegenerate = false;
 
-  const markFailed = async (errorMessage: string) => {
+  const markFailed = async (reportPath: string, errorMessage: string) => {
     await supabase.from("reports").upsert(
       {
         delivery_status: "failed",
@@ -43,6 +61,15 @@ export async function deliverRepairReport(
   };
 
   try {
+    const { data: existingReport } = await supabase
+      .from("reports")
+      .select("storage_bucket, storage_path, generated_at")
+      .eq("work_order_id", workOrderId)
+      .maybeSingle();
+
+    const existingReportRow = existingReport as ReportRow | null;
+    const reportPath = existingReportRow?.storage_path || defaultReportPath;
+
     await supabase.from("reports").upsert(
       {
         delivered_at: null,
@@ -59,44 +86,92 @@ export async function deliverRepairReport(
     );
 
     const { payload, pdfBuffer } = await createRepairReportPdfBuffer(workOrderId);
-    const generatedAt = new Date().toISOString();
+    const shouldRegenerate =
+      action === "closeout" ||
+      action === "regenerate" ||
+      !existingReportRow?.generated_at;
 
-    const { error: uploadError } = await supabase.storage
-      .from(REPORTS_BUCKET)
-      .upload(reportPath, pdfBuffer, {
-        contentType: "application/pdf",
-        upsert: true,
-      });
+    if (shouldRegenerate) {
+      const generatedAt = new Date().toISOString();
+      const { error: uploadError } = await supabase.storage
+        .from(REPORTS_BUCKET)
+        .upload(reportPath, pdfBuffer, {
+          contentType: "application/pdf",
+          upsert: true,
+        });
 
-    if (uploadError) {
-      throw new Error(uploadError.message);
-    }
-
-    const { error: reportUpdateError } = await supabase.from("reports").upsert(
-      {
-        delivery_status: "pending",
-        generated_at: generatedAt,
-        last_error: null,
-        storage_bucket: REPORTS_BUCKET,
-        storage_path: reportPath,
-        work_order_id: workOrderId,
-      },
-      {
-        onConflict: "work_order_id",
+      if (uploadError) {
+        throw new Error(uploadError.message);
       }
-    );
 
-    if (reportUpdateError) {
-      throw new Error(reportUpdateError.message);
+      const { error: reportUpdateError } = await supabase.from("reports").upsert(
+        {
+          delivery_status: "pending",
+          generated_at: generatedAt,
+          last_error: null,
+          storage_bucket: REPORTS_BUCKET,
+          storage_path: reportPath,
+          work_order_id: workOrderId,
+        },
+        {
+          onConflict: "work_order_id",
+        }
+      );
+
+      if (reportUpdateError) {
+        throw new Error(reportUpdateError.message);
+      }
+
+      didRegenerate = true;
     }
 
-    const { data: signedUrlData, error: signedUrlError } = await supabase.storage
+    let signedUrlResult = await supabase.storage
       .from(REPORTS_BUCKET)
       .createSignedUrl(reportPath, REPORT_SIGNED_URL_TTL_SECONDS);
 
-    if (signedUrlError || !signedUrlData?.signedUrl) {
+    if (
+      (signedUrlResult.error || !signedUrlResult.data?.signedUrl) &&
+      !didRegenerate
+    ) {
+      const generatedAt = new Date().toISOString();
+      const { error: uploadError } = await supabase.storage
+        .from(REPORTS_BUCKET)
+        .upload(reportPath, pdfBuffer, {
+          contentType: "application/pdf",
+          upsert: true,
+        });
+
+      if (uploadError) {
+        throw new Error(uploadError.message);
+      }
+
+      const { error: reportUpdateError } = await supabase.from("reports").upsert(
+        {
+          delivery_status: "pending",
+          generated_at: generatedAt,
+          last_error: null,
+          storage_bucket: REPORTS_BUCKET,
+          storage_path: reportPath,
+          work_order_id: workOrderId,
+        },
+        {
+          onConflict: "work_order_id",
+        }
+      );
+
+      if (reportUpdateError) {
+        throw new Error(reportUpdateError.message);
+      }
+
+      didRegenerate = true;
+      signedUrlResult = await supabase.storage
+        .from(REPORTS_BUCKET)
+        .createSignedUrl(reportPath, REPORT_SIGNED_URL_TTL_SECONDS);
+    }
+
+    if (signedUrlResult.error || !signedUrlResult.data?.signedUrl) {
       throw new Error(
-        signedUrlError?.message ||
+        signedUrlResult.error?.message ||
           "Tenant report link could not be prepared for delivery."
       );
     }
@@ -109,7 +184,7 @@ export async function deliverRepairReport(
         react: WorkOrderCompletionEmail({
           closeoutDateLabel: payload.closeoutDateLabel,
           repairSummary: payload.repairSummary,
-          reportUrl: signedUrlData.signedUrl,
+          reportUrl: signedUrlResult.data.signedUrl,
           tenantName: payload.tenant.name,
           unitNumber: payload.unitNumber,
           workOrderId: payload.workOrderId,
@@ -120,7 +195,10 @@ export async function deliverRepairReport(
       },
       {
         headers: {
-          "Idempotency-Key": `completion-email-${payload.workOrderId}-${payload.closeoutDate}`,
+          "Idempotency-Key":
+            action === "closeout"
+              ? `completion-email-${payload.workOrderId}-${payload.closeoutDate}`
+              : `${action}-completion-email-${payload.workOrderId}-${Date.now()}`,
         },
       }
     );
@@ -142,6 +220,9 @@ export async function deliverRepairReport(
     }
 
     return {
+      action,
+      didRegenerate,
+      emailMessageId: emailData?.id ?? null,
       ok: true,
       deliveryStatus: "sent",
       reportPath,
@@ -149,10 +230,13 @@ export async function deliverRepairReport(
   } catch (error) {
     const errorMessage =
       error instanceof Error ? error.message : "Repair report delivery failed.";
+    const reportPath = defaultReportPath;
 
-    await markFailed(errorMessage);
+    await markFailed(reportPath, errorMessage);
 
     return {
+      action,
+      didRegenerate,
       ok: false,
       deliveryStatus: "failed",
       error: errorMessage,

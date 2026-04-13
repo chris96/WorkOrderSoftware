@@ -12,6 +12,7 @@ import {
 
 import { CloseoutForm } from "./closeout-form";
 import { InternalNoteForm } from "./internal-note-form";
+import { ReportActions } from "./report-actions";
 import { WorkOrderControls } from "./work-order-controls";
 
 type RouteParams = Promise<{
@@ -596,6 +597,11 @@ export default async function StaffWorkOrderDetailPage({
                   ) : null}
                 </div>
               </div>
+
+              <ReportActions
+                isClosed={workOrder.status === "closed"}
+                workOrderId={workOrder.id}
+              />
             </section>
 
             <section className="rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-2xl shadow-black/30 backdrop-blur md:p-8">
