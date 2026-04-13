@@ -77,6 +77,10 @@ export async function getRepairReportPayload(workOrderId: string) {
     throw new Error("Work order could not be found for report generation.");
   }
 
+  if (photosError) {
+    throw new Error("Closeout photos could not be loaded for report generation.");
+  }
+
   const reportWorkOrder = workOrder as ReportWorkOrderRow;
 
   if (reportWorkOrder.status !== "closed" || !reportWorkOrder.closed_at) {
@@ -90,11 +94,15 @@ export async function getRepairReportPayload(workOrderId: string) {
   let unitNumber = "Unknown unit";
 
   if (reportWorkOrder.unit_id) {
-    const { data: unit } = await supabase
+    const { data: unit, error: unitError } = await supabase
       .from("units")
       .select("unit_number")
       .eq("id", reportWorkOrder.unit_id)
       .single();
+
+    if (unitError) {
+      throw new Error("Unit information could not be loaded for report generation.");
+    }
 
     unitNumber = unit?.unit_number ?? unitNumber;
   }
@@ -102,23 +110,31 @@ export async function getRepairReportPayload(workOrderId: string) {
   let closedByName: string | null = null;
 
   if (reportWorkOrder.closed_by_user_id) {
-    const { data: closer } = await supabase
+    const { data: closer, error: closerError } = await supabase
       .from("users")
       .select("full_name")
       .eq("id", reportWorkOrder.closed_by_user_id)
       .single();
 
+    if (closerError) {
+      throw new Error("Closing staff information could not be loaded for report generation.");
+    }
+
     closedByName = closer?.full_name ?? null;
   }
 
-  const reportPhotos = photosError ? [] : ((photos ?? []) as ReportPhotoRow[]);
+  const reportPhotos = (photos ?? []) as ReportPhotoRow[];
   const closeoutPhotos = reportPhotos.filter((photo) => photo.photo_type === "closeout");
 
   const closeoutPhotosWithUrls = await Promise.all(
     closeoutPhotos.map(async (photo, index) => {
-      const { data } = await supabase.storage
+      const { data, error } = await supabase.storage
         .from(photo.storage_bucket)
         .createSignedUrl(photo.storage_path, 60 * 60);
+
+      if (error) {
+        throw new Error("Closeout photo access could not be prepared for report generation.");
+      }
 
       return {
         contentType: photo.content_type,

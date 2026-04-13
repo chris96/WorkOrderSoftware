@@ -5,7 +5,13 @@ import { SubmitRequestForm } from "./submit-request-form";
 export const revalidate = 3600;
 
 export default async function SubmitRequestPage() {
-  const unitOptions = await getUnitOptions();
+  let unitOptions: string[] = [];
+
+  try {
+    unitOptions = await getUnitOptions();
+  } catch {
+    unitOptions = [];
+  }
 
   return <SubmitRequestForm unitOptions={unitOptions} />;
 }

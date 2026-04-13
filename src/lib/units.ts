@@ -11,7 +11,7 @@ const getCachedUnitOptions = unstable_cache(
       .order("unit_number", { ascending: true });
 
     if (error) {
-      return [];
+      throw new Error("Unit options could not be loaded.");
     }
 
     return (data ?? []).map((unit) => unit.unit_number);
