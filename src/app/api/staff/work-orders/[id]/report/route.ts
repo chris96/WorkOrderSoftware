@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { getOptionalStaffUser } from "@/lib/staff-auth";
-import { generateRepairReportPdfBuffer } from "@/lib/reports/generate-repair-report-pdf";
-import { getRepairReportPayload } from "@/lib/reports/get-repair-report-payload";
+import { createRepairReportPdfBuffer } from "@/lib/reports/report-storage";
 
 type RouteContext = {
   params: Promise<{
@@ -28,10 +27,10 @@ export async function GET(_request: Request, context: RouteContext) {
   const { id } = await context.params;
 
   try {
-    const payload = await getRepairReportPayload(id);
-    const pdfBuffer = await generateRepairReportPdfBuffer(payload);
+    const { payload, pdfBuffer } = await createRepairReportPdfBuffer(id);
+    const pdfBytes = new Uint8Array(pdfBuffer);
 
-    return new NextResponse(pdfBuffer, {
+    return new NextResponse(pdfBytes, {
       headers: {
         "Content-Disposition": `inline; filename=\"repair-report-${payload.workOrderId}.pdf\"`,
         "Content-Type": "application/pdf",

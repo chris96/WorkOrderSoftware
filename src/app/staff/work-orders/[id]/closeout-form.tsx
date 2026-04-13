@@ -108,6 +108,10 @@ export function CloseoutForm({
         | {
             ok: true;
             message: string;
+            reportDelivery?: {
+              deliveryStatus: "failed" | "sent";
+              ok: boolean;
+            };
           }
         | {
             ok: false;
@@ -115,7 +119,13 @@ export function CloseoutForm({
           };
 
       setMessage(payload.message);
-      setMessageTone(response.ok && payload.ok ? "success" : "error");
+      setMessageTone(
+        response.ok && payload.ok
+          ? payload.reportDelivery?.ok === false
+            ? "info"
+            : "success"
+          : "error"
+      );
 
       if (response.ok && payload.ok) {
         setRepairSummaryValue("");

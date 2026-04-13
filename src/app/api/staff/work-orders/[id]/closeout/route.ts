@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { deliverRepairReport } from "@/lib/reports/deliver-repair-report";
 import { getOptionalStaffUser } from "@/lib/staff-auth";
 import { createAdminSupabaseClient } from "@/lib/supabase/server";
 import { closeoutSchema } from "@/lib/validation/staff-work-orders";
@@ -286,9 +287,14 @@ export async function POST(request: Request, context: RouteContext) {
       );
     }
 
+    const reportDelivery = await deliverRepairReport(id);
+
     return NextResponse.json({
       ok: true,
-      message: "Repair closed out successfully.",
+      message: reportDelivery.ok
+        ? "Repair closed out successfully. The tenant completion email has been sent."
+        : "Repair closed out successfully, but the tenant completion email did not send. Staff follow-up is still required.",
+      reportDelivery,
     });
   } catch (error) {
     if (didUpdateWorkOrder) {

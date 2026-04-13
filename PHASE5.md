@@ -13,18 +13,23 @@
   - [x] closeout photos
   - Satisfied by the shared `getRepairReportPayload` helper, which assembles report-ready data from the closed work order.
 - [x] Generate a PDF repair report
-  - Satisfied by the initial `@react-pdf/renderer` report document and the staff-only preview route. Persistent storage is still pending.
+  - Satisfied by the shared report payload/PDF pipeline plus the staff-only preview route.
 - [x] Store the generated report file
-  - Satisfied by uploading the generated PDF into the `repair-reports` storage bucket when staff opens the report preview route.
+  - Satisfied by uploading the canonical PDF into the `repair-reports` storage bucket during the closeout delivery flow.
 - [x] Save report metadata in `reports`
-  - Satisfied by upserting a canonical `reports` row keyed by `work_order_id` when the PDF is generated.
+  - Satisfied by upserting a canonical `reports` row keyed by `work_order_id` during report generation and delivery.
 - [x] Track report generation and delivery timestamps
-  - Satisfied for generation by storing `generated_at` in `reports`. Delivery timestamps remain pending until the email flow is implemented.
-- [ ] Add a completion email template for tenants
-- [ ] Send the completion email after a report is generated
-- [ ] Include the report as a secure link in the tenant email
-- [ ] Prevent report/email failures from breaking the closeout workflow
-- [ ] Allow staff to review report generation status
+  - Satisfied by storing `generated_at` when the report is built and `delivered_at` when the tenant completion email is sent.
+- [x] Add a completion email template for tenants
+  - Satisfied by the new React Email-based completion template used by the closeout delivery path.
+- [x] Send the completion email after a report is generated
+  - Satisfied by the closeout route calling the canonical report delivery helper after the request is successfully closed.
+- [x] Include the report as a secure link in the tenant email
+  - Satisfied by generating a signed Supabase Storage URL for the private report PDF and including it in the tenant email.
+- [x] Prevent report/email failures from breaking the closeout workflow
+  - Satisfied by recording report delivery failures in `reports` while leaving the work order itself closed.
+- [x] Allow staff to review report generation status
+  - Satisfied by the report delivery status panel on the staff work order detail page.
 - [x] Allow staff to open the generated report from the staff workflow
   - Satisfied by the closed-request `Preview Repair Report` link in the staff portal.
 - [ ] Allow staff to regenerate the report if needed
@@ -99,6 +104,10 @@
 - Use a secure report link for v1 delivery
 - Keep the email wording simple, clear, and professional
 - Add the required email provider setup and env vars for delivery
+  - Current code expects:
+    - `RESEND_API_KEY`
+    - `RESEND_FROM_EMAIL`
+    - optional `RESEND_REPLY_TO_EMAIL`
 
 ### 6. Delivery and failure handling
 - Do not let a report-generation or email failure undo the closeout itself
