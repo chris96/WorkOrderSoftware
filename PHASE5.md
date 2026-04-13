@@ -41,8 +41,10 @@
 - [ ] Keep internal staff-only notes out of the tenant-facing report and email
 - [x] Verify report content matches the closed work order
   - Satisfied by a manual smoke test against live Supabase data, confirming that a closed work order could generate a report with the expected stored PDF and matching report metadata.
-- [ ] Verify the completion email is delivered successfully
-- [ ] Test the Phase 5 flow end to end
+- [x] Verify the completion email is delivered successfully
+  - Satisfied by a manual live smoke test on April 13, 2026 using a temporary closed work order and real Resend credentials. The test stored the PDF, generated a secure report link, updated `reports.delivery_status` to `sent`, and recorded a real `email_message_id`.
+- [x] Test the Phase 5 flow end to end
+  - Satisfied by the same April 13, 2026 manual smoke test covering closed work order creation, report generation, report storage, signed-link creation, tenant completion email delivery, and final `reports` metadata updates.
 
 ## Implementation Plan
 
