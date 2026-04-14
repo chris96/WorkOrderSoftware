@@ -43,6 +43,13 @@ export function ReportActions({ isClosed, workOrderId }: ReportActionsProps) {
       if (response.ok) {
         router.refresh();
       }
+    } catch (error) {
+      setTone("error");
+      setMessage(
+        error instanceof Error
+          ? error.message
+          : "The report action could not be completed. Please try again."
+      );
     } finally {
       setIsSubmittingAction(null);
     }
