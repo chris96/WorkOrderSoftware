@@ -5,7 +5,7 @@ export default function Home() {
     month: "long",
     day: "numeric",
     year: "numeric",
-  }).format(new Date("2026-04-14T12:00:00-04:00"));
+  }).format(new Date("2026-04-15T12:00:00-04:00"));
 
   return (
     <main className="flex flex-1 items-center justify-center px-6 py-16">
@@ -13,17 +13,17 @@ export default function Home() {
         <div className="grid gap-12 md:grid-cols-[1.2fr_0.8fr] md:items-end">
           <section className="space-y-6">
             <p className="text-sm uppercase tracking-[0.3em] text-amber-300">
-              Phase 5 Complete
+              Phase 6 Tenant Portal
             </p>
             <div className="space-y-4">
               <h1 className="max-w-2xl text-4xl font-semibold tracking-tight text-white md:text-6xl">
-                Phase 5 is complete for the work order system.
+                Phase 6 is now under development for the work order system.
               </h1>
               <p className="max-w-2xl text-lg leading-8 text-stone-300">
                 Tenant intake, staff operations, and the closeout workflow are
                 live. Repair report generation and tenant completion email delivery
-                are now in place, and Phase 6 tenant portal work is next on the
-                roadmap.
+                are now in place, and the next active build phase is tenant
+                portal access, request history, and final report visibility.
               </p>
             </div>
             <div className="flex flex-wrap gap-3">
@@ -74,7 +74,7 @@ export default function Home() {
               Coming Next
             </h2>
             <ul className="mt-4 space-y-3 text-sm leading-7 text-stone-300">
-              <li>Phase 6 tenant portal access flow</li>
+              <li>Phase 6 tenant portal access flow now in development</li>
               <li>Tenant portal history and request visibility improvements</li>
               <li>Tenant-side request detail pages with final report visibility</li>
               <li>Email notifications and emergency escalation at the end of the roadmap</li>
@@ -85,7 +85,7 @@ export default function Home() {
         <footer className="mt-10 flex flex-col gap-2 border-t border-white/10 pt-6 text-sm text-stone-400 md:flex-row md:items-center md:justify-between">
           <p>This application is currently under development.</p>
           <p>
-            Status: Phase 5 complete, with Phase 6 next as of {currentDate}
+            Status: Phase 6 in progress, with Phase 5 complete as of {currentDate}
           </p>
         </footer>
       </div>
