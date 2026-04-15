@@ -1,15 +1,17 @@
-import { createAdminSupabaseClient } from "@/lib/supabase/server";
+import { getUnitOptions } from "@/lib/units";
 
 import { SubmitRequestForm } from "./submit-request-form";
 
-export default async function SubmitRequestPage() {
-  const supabase = createAdminSupabaseClient();
-  const { data, error } = await supabase
-    .from("units")
-    .select("unit_number")
-    .order("unit_number", { ascending: true });
+export const revalidate = 3600;
 
-  const unitOptions = error ? [] : (data ?? []).map((unit) => unit.unit_number);
+export default async function SubmitRequestPage() {
+  let unitOptions: string[] = [];
+
+  try {
+    unitOptions = await getUnitOptions();
+  } catch {
+    unitOptions = [];
+  }
 
   return <SubmitRequestForm unitOptions={unitOptions} />;
 }

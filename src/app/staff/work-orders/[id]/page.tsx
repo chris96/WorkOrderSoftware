@@ -12,6 +12,7 @@ import {
 
 import { CloseoutForm } from "./closeout-form";
 import { InternalNoteForm } from "./internal-note-form";
+import { ReportActions } from "./report-actions";
 import { WorkOrderControls } from "./work-order-controls";
 
 type RouteParams = Promise<{
@@ -55,6 +56,16 @@ type WorkOrderEventRow = {
   metadata: Record<string, unknown>;
   note: string | null;
   to_status: WorkOrderStatus | null;
+};
+
+type ReportRow = {
+  delivered_at: string | null;
+  delivery_status: "pending" | "sent" | "failed";
+  email_message_id: string | null;
+  generated_at: string | null;
+  last_error: string | null;
+  storage_bucket: string;
+  storage_path: string;
 };
 
 function getTimelineTitle(event: WorkOrderEventRow) {
@@ -123,7 +134,7 @@ export default async function StaffWorkOrderDetailPage({
   const { id } = await params;
   const supabase = createAdminSupabaseClient();
 
-  const [workOrderResult, photosResult, eventsResult, staffUsersResult] =
+  const [workOrderResult, photosResult, eventsResult, staffUsersResult, reportResult] =
     await Promise.all([
       supabase
         .from("work_orders")
@@ -149,6 +160,13 @@ export default async function StaffWorkOrderDetailPage({
         .select("id, full_name, role")
         .eq("is_active", true)
         .in("role", ["super", "backup"]),
+      supabase
+        .from("reports")
+        .select(
+          "storage_bucket, storage_path, delivery_status, generated_at, delivered_at, email_message_id, last_error"
+        )
+        .eq("work_order_id", id)
+        .maybeSingle(),
     ]);
 
   if (workOrderResult.error || !workOrderResult.data) {
@@ -208,6 +226,17 @@ export default async function StaffWorkOrderDetailPage({
     const action = typeof event.metadata.action === "string" ? event.metadata.action : "";
     return event.event_type === "note_added" && action !== "assignment_changed";
   });
+  const report = reportResult.data as ReportRow | null;
+
+  let reportStatusLabel = "Not generated yet";
+
+  if (report?.delivery_status === "pending") {
+    reportStatusLabel = "Generated and pending delivery";
+  } else if (report?.delivery_status === "sent") {
+    reportStatusLabel = "Tenant completion email sent";
+  } else if (report?.delivery_status === "failed") {
+    reportStatusLabel = "Delivery failed";
+  }
 
   return (
     <main className="px-6 py-12 md:px-8 md:py-16">
@@ -242,6 +271,16 @@ export default async function StaffWorkOrderDetailPage({
             </div>
 
             <div className="flex flex-wrap gap-3">
+              {workOrder.status === "closed" ? (
+                <a
+                  href={`/api/staff/work-orders/${workOrder.id}/report`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex rounded-full bg-amber-300 px-5 py-3 text-sm font-medium text-stone-950 transition hover:bg-amber-200"
+                >
+                  Preview Repair Report
+                </a>
+              ) : null}
               <Link
                 href="/staff"
                 className="inline-flex rounded-full border border-white/15 px-5 py-3 text-sm font-medium text-white transition hover:border-white/30 hover:bg-white/5"
@@ -516,6 +555,53 @@ export default async function StaffWorkOrderDetailPage({
                   workOrderId={workOrder.id}
                 />
               </div>
+            </section>
+
+            <section className="rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-2xl shadow-black/30 backdrop-blur md:p-8">
+              <p className="text-sm uppercase tracking-[0.25em] text-stone-400">
+                Repair Report
+              </p>
+              <h2 className="mt-2 text-3xl font-semibold tracking-tight text-white">
+                Report delivery
+              </h2>
+              <p className="mt-3 text-sm leading-7 text-stone-400">
+                This panel tracks the tenant-facing repair report and completion email.
+              </p>
+
+              <div className="mt-6 rounded-[1.5rem] border border-white/10 bg-black/20 p-5">
+                <div className="space-y-3 text-sm leading-7 text-stone-300">
+                  <p>
+                    <span className="font-medium text-white">Status:</span>{" "}
+                    {reportStatusLabel}
+                  </p>
+                  <p>
+                    <span className="font-medium text-white">Generated:</span>{" "}
+                    {formatWorkOrderDateTime(report?.generated_at ?? null)}
+                  </p>
+                  <p>
+                    <span className="font-medium text-white">Delivered:</span>{" "}
+                    {formatWorkOrderDateTime(report?.delivered_at ?? null)}
+                  </p>
+                  <p>
+                    <span className="font-medium text-white">Email ID:</span>{" "}
+                    {report?.email_message_id || "Not recorded"}
+                  </p>
+                  <p>
+                    <span className="font-medium text-white">Storage path:</span>{" "}
+                    {report?.storage_path || "Not stored yet"}
+                  </p>
+                  {report?.last_error ? (
+                    <p className="rounded-[1rem] border border-rose-300/20 bg-rose-400/10 px-4 py-3 text-rose-100">
+                      {report.last_error}
+                    </p>
+                  ) : null}
+                </div>
+              </div>
+
+              <ReportActions
+                isClosed={workOrder.status === "closed"}
+                workOrderId={workOrder.id}
+              />
             </section>
 
             <section className="rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-2xl shadow-black/30 backdrop-blur md:p-8">

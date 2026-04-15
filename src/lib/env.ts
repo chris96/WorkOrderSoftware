@@ -45,6 +45,17 @@ export function getStaffBootstrapEnv() {
   };
 }
 
+export function getEmailEnv() {
+  return {
+    resendApiKey: requireEnv("RESEND_API_KEY", process.env.RESEND_API_KEY),
+    resendFromEmail: requireEnv(
+      "RESEND_FROM_EMAIL",
+      process.env.RESEND_FROM_EMAIL
+    ),
+    resendReplyToEmail: process.env.RESEND_REPLY_TO_EMAIL,
+  };
+}
+
 export function hasSupabasePublicEnv() {
   return Boolean(
     process.env.NEXT_PUBLIC_SUPABASE_URL &&
