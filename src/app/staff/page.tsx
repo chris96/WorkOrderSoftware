@@ -116,7 +116,7 @@ function WorkOrderCard({
               {formatWorkOrderStatus(workOrder.status)}
             </span>
             {workOrder.is_emergency ? (
-              <span className="rounded-full border border-rose-300/20 bg-rose-400/10 px-3 py-1 text-xs font-medium uppercase tracking-[0.18em] text-rose-100">
+              <span className="rounded-full border border-rose-200 bg-rose-100 px-3 py-1 text-xs font-medium uppercase tracking-[0.18em] text-rose-900">
                 Emergency
               </span>
             ) : null}
