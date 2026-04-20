@@ -1,20 +1,34 @@
 # Phase 6
 
 ## Checklist
-- [ ] Add a tenant access flow
-- [ ] Use a lightweight passwordless email-based access model for v1
-- [ ] Let tenants access only their own requests
-- [ ] Add a tenant request history page
-- [ ] Add a tenant request detail page
-- [ ] Show current request status in the tenant portal
-- [ ] Show final repair reports for completed requests
-- [ ] Reuse existing work order and report data without exposing staff-only fields
-- [ ] Prevent tenant access to other tenants' requests
-- [ ] Keep tenant portal links and access tokens secure
-- [ ] Handle expired or invalid tenant access links cleanly
-- [ ] Give tenants a clear signed-in or active-session state
-- [ ] Add tenant-side empty states for no requests and no completed reports
-- [ ] Keep the tenant portal mobile-friendly and simple to use
+- [x] Add a tenant access flow
+  - Satisfied by the tenant sign-in landing page, magic-link API route, and auth callback flow.
+- [x] Use a lightweight passwordless email-based access model for v1
+  - Satisfied by Supabase magic-link authentication tied to the tenant email address.
+- [x] Let tenants access only their own requests
+  - Satisfied by server-side ownership checks against `work_orders.tenant_email`.
+- [x] Add a tenant request history page
+  - Satisfied by `/tenant/requests`.
+- [x] Add a tenant request detail page
+  - Satisfied by `/tenant/requests/[id]`.
+- [x] Show current request status in the tenant portal
+  - Satisfied by tenant history and tenant detail views showing status badges and status labels.
+- [x] Show final repair reports for completed requests
+  - Satisfied by tenant detail pages exposing the `Open Final Report` action when a report exists.
+- [x] Reuse existing work order and report data without exposing staff-only fields
+  - Satisfied by tenant-safe queries that reuse `work_orders` and `reports` without surfacing internal notes or private storage fields.
+- [x] Prevent tenant access to other tenants' requests
+  - Satisfied by `requireTenantOwnedWorkOrder()` and the tenant-only report route ownership check.
+- [x] Keep tenant portal links and access tokens secure
+  - Satisfied by Supabase auth sessions plus server-generated signed report URLs.
+- [x] Handle expired or invalid tenant access links cleanly
+  - Satisfied by explicit error messaging on `/tenant/sign-in` for invalid or incomplete callback states.
+- [x] Give tenants a clear signed-in or active-session state
+  - Satisfied by signed-in email display and tenant sign-out controls.
+- [x] Add tenant-side empty states for no requests and no completed reports
+  - Satisfied by the no-requests history state and no-report-yet messaging on tenant request detail pages.
+- [x] Keep the tenant portal mobile-friendly and simple to use
+  - Satisfied by the current single-column responsive tenant views and limited v1 scope.
 - [ ] Verify a tenant can access their request history securely
 - [ ] Verify a tenant cannot access another tenant's requests
 - [ ] Verify completed requests can expose the final report correctly
