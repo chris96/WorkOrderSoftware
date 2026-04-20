@@ -10,9 +10,31 @@ export type TenantUser = {
   id: string;
 };
 
-type TenantOwnedWorkOrder = {
+export type TenantWorkOrderSummary = {
+  category: string;
+  closed_at: string | null;
   id: string;
+  is_emergency: boolean;
+  status: string;
+  submitted_at: string;
   tenant_email: string;
+};
+
+type TenantOwnedWorkOrder = {
+  category?: string;
+  closed_at?: string | null;
+  description?: string;
+  id: string;
+  is_emergency?: boolean;
+  status?: string;
+  submitted_at?: string;
+  tenant_email: string;
+  unit_id?: string | null;
+};
+
+export type TenantOwnedWorkOrderResult = {
+  tenantUser: TenantUser;
+  workOrder: TenantOwnedWorkOrder;
 };
 
 function normalizeTenantEmail(email: string) {
@@ -51,7 +73,9 @@ export async function getTenantOwnedWorkOrder(workOrderId: string) {
 
   const { data: workOrder, error } = await supabase
     .from("work_orders")
-    .select("id, tenant_email")
+    .select(
+      "id, tenant_email, unit_id, category, description, status, is_emergency, submitted_at, closed_at"
+    )
     .eq("id", workOrderId)
     .single();
 
@@ -70,7 +94,7 @@ export async function getTenantOwnedWorkOrder(workOrderId: string) {
   return {
     tenantUser,
     workOrder: tenantOwnedWorkOrder,
-  };
+  } satisfies TenantOwnedWorkOrderResult;
 }
 
 export async function requireTenantOwnedWorkOrder(workOrderId: string) {
@@ -81,4 +105,26 @@ export async function requireTenantOwnedWorkOrder(workOrderId: string) {
   }
 
   return ownedWorkOrder;
+}
+
+export async function listTenantWorkOrders() {
+  const tenantUser = await requireTenantUser();
+  const supabase = createAdminSupabaseClient();
+
+  const { data: workOrders, error } = await supabase
+    .from("work_orders")
+    .select(
+      "id, tenant_email, category, status, is_emergency, submitted_at, closed_at"
+    )
+    .eq("tenant_email", tenantUser.email)
+    .order("submitted_at", { ascending: false });
+
+  if (error) {
+    throw new Error("Tenant work orders could not be loaded.");
+  }
+
+  return {
+    tenantUser,
+    workOrders: (workOrders ?? []) as TenantWorkOrderSummary[],
+  };
 }
