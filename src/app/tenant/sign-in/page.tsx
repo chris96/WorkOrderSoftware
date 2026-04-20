@@ -1,14 +1,40 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
 import { getOptionalTenantUser } from "@/lib/tenant-auth";
 
 import { TenantSignInForm } from "./tenant-sign-in-form";
 
-export default async function TenantSignInPage() {
+function getTenantSignInErrorMessage(errorCode: string | undefined) {
+  if (errorCode === "invalid_link") {
+    return "That sign-in link is no longer valid. Request a new access link below.";
+  }
+
+  if (errorCode === "missing_code") {
+    return "The sign-in link was incomplete. Request a new access link below.";
+  }
+
+  return null;
+}
+
+export default async function TenantSignInPage({
+  searchParams,
+}: {
+  searchParams: Promise<{
+    error?: string;
+  }>;
+}) {
   const tenantUser = await getOptionalTenantUser();
+  const { error } = await searchParams;
+
+  if (tenantUser && !error) {
+    redirect("/tenant/requests");
+  }
+
   const alreadySignedInMessage = tenantUser
     ? `You are already signed in as ${tenantUser.email}. You can go directly to your request history.`
     : null;
+  const errorMessage = getTenantSignInErrorMessage(error);
 
   return (
     <main className="flex flex-1 items-center justify-center px-6 py-16">
@@ -27,6 +53,12 @@ export default async function TenantSignInPage() {
         {alreadySignedInMessage ? (
           <div className="mt-8 rounded-[1.25rem] border border-emerald-300/20 bg-emerald-400/10 px-4 py-3 text-sm leading-7 text-emerald-50">
             {alreadySignedInMessage}
+          </div>
+        ) : null}
+
+        {errorMessage ? (
+          <div className="mt-5 rounded-[1.25rem] border border-rose-300/20 bg-rose-400/10 px-4 py-3 text-sm leading-7 text-rose-100">
+            {errorMessage}
           </div>
         ) : null}
 

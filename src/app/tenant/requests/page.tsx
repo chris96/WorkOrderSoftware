@@ -51,7 +51,19 @@ export default async function TenantRequestsPage() {
             </p>
           </section>
         ) : (
-          <section className="grid gap-4">
+          <section className="space-y-6">
+            <div className="rounded-[1.5rem] border border-white/10 bg-black/20 p-5 text-sm leading-7 text-stone-300">
+              <p>
+                <span className="font-medium text-white">Requests found:</span>{" "}
+                {workOrders.length}
+              </p>
+              <p className="text-stone-400">
+                Open requests and completed requests are both shown here. Final
+                report access appears inside each request detail page.
+              </p>
+            </div>
+
+            <div className="grid gap-4">
             {workOrders.map((workOrder) => (
               <article
                 key={workOrder.id}
@@ -93,6 +105,7 @@ export default async function TenantRequestsPage() {
                 </div>
               </article>
             ))}
+            </div>
           </section>
         )}
 
