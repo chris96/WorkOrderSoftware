@@ -57,7 +57,7 @@ export function ReportActions({ isClosed, workOrderId }: ReportActionsProps) {
 
   if (!isClosed) {
     return (
-      <p className="mt-4 text-sm leading-7 text-stone-500">
+      <p className="mt-4 text-sm leading-7 text-slate-500">
         Report delivery actions unlock after the request has been closed.
       </p>
     );
@@ -69,10 +69,10 @@ export function ReportActions({ isClosed, workOrderId }: ReportActionsProps) {
         <div
           className={`rounded-[1rem] border px-4 py-3 text-sm leading-7 ${
             tone === "success"
-              ? "border-emerald-300/20 bg-emerald-400/10 text-emerald-50"
+              ? "border-emerald-200 bg-emerald-50 text-emerald-800"
               : tone === "error"
-                ? "border-rose-300/20 bg-rose-400/10 text-rose-100"
-                : "border-white/10 bg-black/20 text-stone-200"
+                ? "border-rose-200 bg-rose-50 text-rose-800"
+                : "border-slate-200 bg-white/80 text-slate-700"
           }`}
         >
           {message}
@@ -84,7 +84,7 @@ export function ReportActions({ isClosed, workOrderId }: ReportActionsProps) {
           type="button"
           disabled={isSubmittingAction !== null}
           onClick={() => runAction("resend")}
-          className="inline-flex justify-center rounded-full border border-white/15 px-5 py-3 text-sm font-medium text-white transition hover:border-white/30 hover:bg-white/5 disabled:cursor-not-allowed disabled:border-white/10 disabled:text-stone-500"
+          className="app-button-secondary justify-center disabled:text-slate-400"
         >
           {isSubmittingAction === "resend"
             ? "Resending Email..."
@@ -94,7 +94,7 @@ export function ReportActions({ isClosed, workOrderId }: ReportActionsProps) {
           type="button"
           disabled={isSubmittingAction !== null}
           onClick={() => runAction("regenerate")}
-          className="inline-flex justify-center rounded-full bg-amber-300 px-5 py-3 text-sm font-semibold text-stone-950 transition hover:bg-amber-200 disabled:cursor-not-allowed disabled:bg-amber-200/60"
+          className="app-button-primary justify-center font-semibold disabled:bg-blue-300"
         >
           {isSubmittingAction === "regenerate"
             ? "Regenerating Report..."
