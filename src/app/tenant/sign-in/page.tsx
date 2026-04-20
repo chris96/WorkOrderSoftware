@@ -37,27 +37,27 @@ export default async function TenantSignInPage({
   const errorMessage = getTenantSignInErrorMessage(error);
 
   return (
-    <main className="flex flex-1 items-center justify-center px-6 py-16">
-      <div className="w-full max-w-3xl rounded-[2rem] border border-white/10 bg-white/5 p-8 shadow-2xl shadow-black/30 backdrop-blur md:p-10">
-        <p className="text-sm uppercase tracking-[0.3em] text-amber-300">
+    <main className="flex flex-1 items-center justify-center bg-[radial-gradient(circle_at_top,_rgba(96,165,250,0.18),_transparent_38%),linear-gradient(180deg,_#f8fafc_0%,_#eef4ff_48%,_#e6edf8_100%)] px-6 py-16 text-slate-900">
+      <div className="w-full max-w-3xl rounded-[2rem] border border-sky-200/70 bg-white/90 p-8 shadow-[0_30px_90px_rgba(15,23,42,0.12)] backdrop-blur md:p-10">
+        <p className="text-sm uppercase tracking-[0.3em] text-sky-700">
           Tenant Access
         </p>
-        <h1 className="mt-4 text-4xl font-semibold tracking-tight text-white">
+        <h1 className="mt-4 text-4xl font-semibold tracking-tight text-slate-950">
           Sign in to the tenant portal.
         </h1>
-        <p className="mt-4 max-w-2xl text-lg leading-8 text-stone-300">
+        <p className="mt-4 max-w-2xl text-lg leading-8 text-slate-600">
           Enter the email used on your maintenance request and we will send you a
           secure sign-in link.
         </p>
 
         {alreadySignedInMessage ? (
-          <div className="mt-8 rounded-[1.25rem] border border-emerald-300/20 bg-emerald-400/10 px-4 py-3 text-sm leading-7 text-emerald-50">
+          <div className="mt-8 rounded-[1.25rem] border border-sky-200 bg-sky-50 px-4 py-3 text-sm leading-7 text-sky-900">
             {alreadySignedInMessage}
           </div>
         ) : null}
 
         {errorMessage ? (
-          <div className="mt-5 rounded-[1.25rem] border border-rose-300/20 bg-rose-400/10 px-4 py-3 text-sm leading-7 text-rose-100">
+          <div className="mt-5 rounded-[1.25rem] border border-rose-200 bg-rose-50 px-4 py-3 text-sm leading-7 text-rose-900">
             {errorMessage}
           </div>
         ) : null}
@@ -67,13 +67,13 @@ export default async function TenantSignInPage({
         <div className="mt-8 flex flex-wrap gap-3">
           <Link
             href="/tenant/requests"
-            className="rounded-full border border-white/15 px-5 py-3 text-sm font-medium text-white transition hover:border-white/30 hover:bg-white/5"
+            className="rounded-full border border-slate-300 bg-white px-5 py-3 text-sm font-medium text-slate-700 transition hover:border-sky-300 hover:bg-sky-50"
           >
             View Tenant Portal
           </Link>
           <Link
             href="/"
-            className="rounded-full border border-white/15 px-5 py-3 text-sm font-medium text-white transition hover:border-white/30 hover:bg-white/5"
+            className="rounded-full border border-slate-300 bg-white px-5 py-3 text-sm font-medium text-slate-700 transition hover:border-sky-300 hover:bg-sky-50"
           >
             Back Home
           </Link>

@@ -22,7 +22,7 @@ export function TenantSignOutButton() {
       type="button"
       onClick={handleSignOut}
       disabled={isSigningOut}
-      className="rounded-full border border-white/15 px-5 py-3 text-sm font-medium text-white transition hover:border-white/30 hover:bg-white/5 disabled:cursor-not-allowed disabled:border-white/10 disabled:text-stone-500"
+      className="rounded-full border border-slate-300 bg-white px-5 py-3 text-sm font-medium text-slate-700 transition hover:border-sky-300 hover:bg-sky-50 disabled:cursor-not-allowed disabled:border-slate-200 disabled:text-slate-400"
     >
       {isSigningOut ? "Signing Out..." : "Sign Out"}
     </button>

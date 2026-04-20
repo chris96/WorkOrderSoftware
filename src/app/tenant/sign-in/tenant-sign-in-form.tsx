@@ -46,10 +46,10 @@ export function TenantSignInForm() {
         <div
           className={`rounded-[1.25rem] border px-4 py-3 text-sm leading-7 ${
             tone === "success"
-              ? "border-emerald-300/20 bg-emerald-400/10 text-emerald-50"
+              ? "border-sky-200 bg-sky-50 text-sky-900"
               : tone === "error"
-                ? "border-rose-300/20 bg-rose-400/10 text-rose-100"
-                : "border-white/10 bg-black/20 text-stone-200"
+                ? "border-rose-200 bg-rose-50 text-rose-900"
+                : "border-slate-200 bg-slate-50 text-slate-700"
           }`}
         >
           {message}
@@ -57,7 +57,7 @@ export function TenantSignInForm() {
       ) : null}
 
       <div className="space-y-2">
-        <label htmlFor="tenant-email" className="text-sm font-medium text-stone-200">
+        <label htmlFor="tenant-email" className="text-sm font-medium text-slate-700">
           Tenant email
         </label>
         <input
@@ -68,14 +68,14 @@ export function TenantSignInForm() {
           onChange={(event) => setEmail(event.target.value)}
           placeholder="name@example.com"
           disabled={isSubmitting}
-          className="w-full rounded-[1.5rem] border border-white/10 bg-white/5 px-4 py-3 text-sm text-stone-100 outline-none transition placeholder:text-stone-500 focus:border-amber-300/60 disabled:cursor-not-allowed disabled:opacity-60"
+          className="w-full rounded-[1.5rem] border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-sky-400 focus:bg-white disabled:cursor-not-allowed disabled:opacity-60"
         />
       </div>
 
       <button
         type="submit"
         disabled={isSubmitting}
-        className="inline-flex w-full justify-center rounded-full bg-amber-300 px-5 py-3 text-sm font-semibold text-stone-950 transition hover:bg-amber-200 disabled:cursor-not-allowed disabled:bg-amber-200/60"
+        className="inline-flex w-full justify-center rounded-full bg-sky-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-sky-500 disabled:cursor-not-allowed disabled:bg-sky-300"
       >
         {isSubmitting ? "Sending Access Link..." : "Email Me a Sign-In Link"}
       </button>
