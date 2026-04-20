@@ -58,53 +58,64 @@ export default async function TenantRequestsPage() {
                 {workOrders.length}
               </p>
               <p className="text-stone-400">
-                Open requests and completed requests are both shown here. Final
-                report access appears inside each request detail page.
+                Open requests and completed requests are both shown here. Cards now
+                indicate when a final report is ready.
               </p>
             </div>
 
             <div className="grid gap-4">
-            {workOrders.map((workOrder) => (
-              <article
-                key={workOrder.id}
-                className="rounded-[1.5rem] border border-white/10 bg-black/20 p-6"
-              >
-                <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-                  <div className="space-y-3">
-                    <div className="flex flex-wrap items-center gap-3">
-                      <span
-                        className={`rounded-full border px-3 py-1 text-xs font-medium uppercase tracking-[0.18em] ${getWorkOrderStatusClassName(
-                          workOrder.status as WorkOrderStatus
-                        )}`}
-                      >
-                        {formatWorkOrderStatus(workOrder.status as WorkOrderStatus)}
-                      </span>
-                      {workOrder.is_emergency ? (
-                        <span className="rounded-full border border-rose-300/20 bg-rose-400/10 px-3 py-1 text-xs font-medium uppercase tracking-[0.18em] text-rose-100">
-                          Emergency
+              {workOrders.map((workOrder) => (
+                <article
+                  key={workOrder.id}
+                  className="rounded-[1.5rem] border border-white/10 bg-black/20 p-6"
+                >
+                  <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                    <div className="space-y-3">
+                      <div className="flex flex-wrap items-center gap-3">
+                        <span
+                          className={`rounded-full border px-3 py-1 text-xs font-medium uppercase tracking-[0.18em] ${getWorkOrderStatusClassName(
+                            workOrder.status as WorkOrderStatus
+                          )}`}
+                        >
+                          {formatWorkOrderStatus(workOrder.status as WorkOrderStatus)}
                         </span>
-                      ) : null}
+                        {workOrder.is_emergency ? (
+                          <span className="rounded-full border border-rose-300/20 bg-rose-400/10 px-3 py-1 text-xs font-medium uppercase tracking-[0.18em] text-rose-100">
+                            Emergency
+                          </span>
+                        ) : null}
+                        {workOrder.report_generated_at ? (
+                          <span className="rounded-full border border-emerald-300/20 bg-emerald-400/10 px-3 py-1 text-xs font-medium uppercase tracking-[0.18em] text-emerald-100">
+                            Report Ready
+                          </span>
+                        ) : null}
+                      </div>
+                      <h2 className="text-2xl font-semibold tracking-tight text-white">
+                        {workOrder.category}
+                      </h2>
+                      <div className="space-y-1 text-sm leading-7 text-stone-300">
+                        <p>Submitted {formatWorkOrderDateTime(workOrder.submitted_at)}</p>
+                        <p>Completed {formatWorkOrderDateTime(workOrder.closed_at)}</p>
+                        <p>
+                          Final report:{" "}
+                          {workOrder.report_generated_at
+                            ? "Available in request detail"
+                            : "Not ready yet"}
+                        </p>
+                      </div>
                     </div>
-                    <h2 className="text-2xl font-semibold tracking-tight text-white">
-                      {workOrder.category}
-                    </h2>
-                    <div className="space-y-1 text-sm leading-7 text-stone-300">
-                      <p>Submitted {formatWorkOrderDateTime(workOrder.submitted_at)}</p>
-                      <p>Completed {formatWorkOrderDateTime(workOrder.closed_at)}</p>
-                    </div>
-                  </div>
 
-                  <div className="flex flex-wrap gap-3">
-                    <Link
-                      href={`/tenant/requests/${workOrder.id}`}
-                      className="inline-flex rounded-full bg-amber-300 px-5 py-3 text-sm font-medium text-stone-950 transition hover:bg-amber-200"
-                    >
-                      Open Request
-                    </Link>
+                    <div className="flex flex-wrap gap-3">
+                      <Link
+                        href={`/tenant/requests/${workOrder.id}`}
+                        className="inline-flex rounded-full bg-amber-300 px-5 py-3 text-sm font-medium text-stone-950 transition hover:bg-amber-200"
+                      >
+                        Open Request
+                      </Link>
+                    </div>
                   </div>
-                </div>
-              </article>
-            ))}
+                </article>
+              ))}
             </div>
           </section>
         )}

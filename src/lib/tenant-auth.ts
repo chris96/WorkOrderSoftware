@@ -15,6 +15,7 @@ export type TenantWorkOrderSummary = {
   closed_at: string | null;
   id: string;
   is_emergency: boolean;
+  report_generated_at: string | null;
   status: string;
   submitted_at: string;
   tenant_email: string;
@@ -123,8 +124,31 @@ export async function listTenantWorkOrders() {
     throw new Error("Tenant work orders could not be loaded.");
   }
 
+  const workOrderRows = (workOrders ?? []) as TenantWorkOrderSummary[];
+  const workOrderIds = workOrderRows.map((workOrder) => workOrder.id);
+
+  let reportGeneratedAtMap = new Map<string, string | null>();
+
+  if (workOrderIds.length > 0) {
+    const { data: reports, error: reportsError } = await supabase
+      .from("reports")
+      .select("work_order_id, generated_at")
+      .in("work_order_id", workOrderIds);
+
+    if (reportsError) {
+      throw new Error("Tenant report availability could not be loaded.");
+    }
+
+    reportGeneratedAtMap = new Map(
+      (reports ?? []).map((report) => [report.work_order_id, report.generated_at])
+    );
+  }
+
   return {
     tenantUser,
-    workOrders: (workOrders ?? []) as TenantWorkOrderSummary[],
+    workOrders: workOrderRows.map((workOrder) => ({
+      ...workOrder,
+      report_generated_at: reportGeneratedAtMap.get(workOrder.id) ?? null,
+    })),
   };
 }
