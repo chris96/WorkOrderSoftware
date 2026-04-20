@@ -103,11 +103,11 @@ function WorkOrderCard({
   workOrder: DashboardWorkOrder;
 }) {
   return (
-    <article className="rounded-[1.5rem] border border-white/10 bg-black/20 p-5">
+    <article className="rounded-[1.5rem] border border-slate-700/70 bg-slate-800/80 p-5">
       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
         <div className="space-y-2">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs uppercase tracking-[0.24em] text-stone-300">
+            <span className="rounded-full border border-slate-600/80 bg-slate-700/70 px-3 py-1 text-xs uppercase tracking-[0.24em] text-stone-200">
               Unit {workOrder.unitNumber}
             </span>
             <span
@@ -130,7 +130,7 @@ function WorkOrderCard({
           </p>
         </div>
 
-        <div className="rounded-[1.25rem] border border-white/10 bg-white/[0.03] px-4 py-3 text-sm leading-7 text-stone-300 md:min-w-[220px]">
+        <div className="rounded-[1.25rem] border border-slate-700/70 bg-slate-700/40 px-4 py-3 text-sm leading-7 text-stone-300 md:min-w-[220px]">
           <p>
             Request ID: <span className="text-amber-200">{workOrder.id}</span>
           </p>
@@ -142,7 +142,7 @@ function WorkOrderCard({
       </div>
 
       <div className="mt-5 grid gap-3 md:grid-cols-3">
-        <div className="rounded-[1.25rem] border border-white/10 bg-white/[0.03] p-4 text-sm leading-7 text-stone-300">
+        <div className="rounded-[1.25rem] border border-slate-700/70 bg-slate-700/40 p-4 text-sm leading-7 text-stone-300">
           <p className="text-xs uppercase tracking-[0.18em] text-stone-500">
             Tenant
           </p>
@@ -151,7 +151,7 @@ function WorkOrderCard({
           <p>{workOrder.tenant_phone || "No phone provided"}</p>
         </div>
 
-        <div className="rounded-[1.25rem] border border-white/10 bg-white/[0.03] p-4 text-sm leading-7 text-stone-300">
+        <div className="rounded-[1.25rem] border border-slate-700/70 bg-slate-700/40 p-4 text-sm leading-7 text-stone-300">
           <p className="text-xs uppercase tracking-[0.18em] text-stone-500">
             Assignment
           </p>
@@ -165,7 +165,7 @@ function WorkOrderCard({
           </p>
         </div>
 
-        <div className="flex flex-col justify-between rounded-[1.25rem] border border-white/10 bg-white/[0.03] p-4 text-sm leading-7 text-stone-300">
+        <div className="flex flex-col justify-between rounded-[1.25rem] border border-slate-700/70 bg-slate-700/40 p-4 text-sm leading-7 text-stone-300">
           <div>
             <p className="text-xs uppercase tracking-[0.18em] text-stone-500">
               Next step
@@ -203,7 +203,7 @@ function DashboardSection({
   const showClosedDate = title === "Recently Closed";
 
   return (
-    <section className="rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-2xl shadow-black/30 backdrop-blur md:p-8">
+    <section className="rounded-[2rem] border border-slate-700/70 bg-slate-900/75 p-6 shadow-2xl shadow-black/30 backdrop-blur md:p-8">
       <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div>
           <p className="text-sm uppercase tracking-[0.25em] text-stone-400">
@@ -217,7 +217,7 @@ function DashboardSection({
       </div>
 
       {workOrders.length === 0 ? (
-        <div className="mt-6 rounded-[1.75rem] border border-dashed border-white/10 bg-black/20 px-6 py-8 text-center">
+        <div className="mt-6 rounded-[1.75rem] border border-dashed border-slate-700/70 bg-slate-800/80 px-6 py-8 text-center">
           <p className="text-lg font-medium text-white">{emptyTitle}</p>
           <p className="mt-3 text-sm leading-7 text-stone-400">{emptyBody}</p>
         </div>

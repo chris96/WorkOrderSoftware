@@ -46,19 +46,19 @@ a {
   }
 
   .app-panel {
-    @apply rounded-[2rem] border border-blue-200/70 bg-white/90 p-8 shadow-[0_30px_90px_rgba(15,23,42,0.12)] backdrop-blur md:p-10;
+    @apply rounded-[2rem] border border-slate-300/90 bg-slate-100/92 p-8 shadow-[0_30px_90px_rgba(15,23,42,0.12)] backdrop-blur md:p-10;
   }
 
   .app-panel-muted {
-    @apply rounded-[1.5rem] border border-slate-200 bg-white/85 p-6 shadow-[0_18px_48px_rgba(15,23,42,0.08)];
+    @apply rounded-[1.5rem] border border-slate-300/90 bg-slate-100/88 p-6 shadow-[0_18px_48px_rgba(15,23,42,0.08)];
   }
 
   .app-panel-subtle {
-    @apply rounded-[1.5rem] border border-slate-200 bg-slate-50 p-5 text-sm leading-7 text-slate-700;
+    @apply rounded-[1.5rem] border border-slate-300/80 bg-slate-200/70 p-5 text-sm leading-7 text-slate-700;
   }
 
   .app-panel-empty {
-    @apply rounded-[2rem] border border-dashed border-blue-200 bg-white/70 px-6 py-8 text-center shadow-[0_16px_45px_rgba(15,23,42,0.08)];
+    @apply rounded-[2rem] border border-dashed border-slate-300 bg-slate-100/75 px-6 py-8 text-center shadow-[0_16px_45px_rgba(15,23,42,0.08)];
   }
 
   .app-kicker {
