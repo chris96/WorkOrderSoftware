@@ -44,12 +44,12 @@ export function TenantSignInForm() {
     <form className="mt-8 space-y-5" onSubmit={handleSubmit}>
       {message ? (
         <div
-          className={`rounded-[1.25rem] border px-4 py-3 text-sm leading-7 ${
+          className={`${
             tone === "success"
-              ? "border-sky-200 bg-sky-50 text-sky-900"
+              ? "app-alert-success"
               : tone === "error"
-                ? "border-rose-200 bg-rose-50 text-rose-900"
-                : "border-slate-200 bg-slate-50 text-slate-700"
+                ? "app-alert-error"
+                : "app-alert-info"
           }`}
         >
           {message}
@@ -68,14 +68,14 @@ export function TenantSignInForm() {
           onChange={(event) => setEmail(event.target.value)}
           placeholder="name@example.com"
           disabled={isSubmitting}
-          className="w-full rounded-[1.5rem] border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-sky-400 focus:bg-white disabled:cursor-not-allowed disabled:opacity-60"
+          className="app-input"
         />
       </div>
 
       <button
         type="submit"
         disabled={isSubmitting}
-        className="inline-flex w-full justify-center rounded-full bg-sky-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-sky-500 disabled:cursor-not-allowed disabled:bg-sky-300"
+        className="app-button-primary w-full justify-center font-semibold"
       >
         {isSubmitting ? "Sending Access Link..." : "Email Me a Sign-In Link"}
       </button>

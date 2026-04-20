@@ -13,18 +13,14 @@ export default async function TenantRequestsPage() {
   const { tenantUser, workOrders } = await listTenantWorkOrders();
 
   return (
-    <main className="bg-[radial-gradient(circle_at_top,_rgba(96,165,250,0.16),_transparent_34%),linear-gradient(180deg,_#f8fafc_0%,_#eef4ff_48%,_#e6edf8_100%)] px-6 py-12 text-slate-900 md:px-8 md:py-16">
-      <div className="mx-auto w-full max-w-5xl space-y-8">
-        <section className="rounded-[2rem] border border-sky-200/70 bg-white/90 p-8 shadow-[0_30px_90px_rgba(15,23,42,0.12)] backdrop-blur md:p-10">
+    <main className="app-shell-page">
+      <div className="app-container space-y-8">
+        <section className="app-panel">
           <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
             <div>
-              <p className="text-sm uppercase tracking-[0.3em] text-sky-700">
-                Tenant Portal
-              </p>
-              <h1 className="mt-4 text-4xl font-semibold tracking-tight text-slate-950 md:text-5xl">
-                Your request history
-              </h1>
-              <p className="mt-4 max-w-3xl text-lg leading-8 text-slate-600">
+              <p className="app-kicker">Tenant Portal</p>
+              <h1 className="app-heading">Your request history</h1>
+              <p className="app-copy max-w-3xl">
                 This view loads real requests for the authenticated tenant email and
                 excludes staff-only fields. Each detail page is protected by a
                 server-side ownership check.
@@ -34,17 +30,17 @@ export default async function TenantRequestsPage() {
             <TenantSignOutButton />
           </div>
 
-          <div className="mt-8 rounded-[1.5rem] border border-slate-200 bg-slate-50 p-5 text-sm leading-7 text-slate-700">
+          <div className="app-panel-subtle mt-8">
             <p>
-              <span className="font-medium text-slate-950">Signed in as:</span>{" "}
+              <span className="font-medium text-slate-900">Signed in as:</span>{" "}
               {tenantUser.email}
             </p>
           </div>
         </section>
 
         {workOrders.length === 0 ? (
-          <section className="rounded-[2rem] border border-dashed border-sky-200 bg-white/70 px-6 py-8 text-center shadow-[0_16px_45px_rgba(15,23,42,0.08)]">
-            <p className="text-lg font-medium text-slate-950">No requests found yet.</p>
+          <section className="app-panel-empty">
+            <p className="text-lg font-medium text-slate-900">No requests found yet.</p>
             <p className="mt-3 text-sm leading-7 text-slate-500">
               Once a maintenance request is submitted with this email address, it will
               appear here.
@@ -52,9 +48,9 @@ export default async function TenantRequestsPage() {
           </section>
         ) : (
           <section className="space-y-6">
-            <div className="rounded-[1.5rem] border border-slate-200 bg-white/80 p-5 text-sm leading-7 text-slate-700 shadow-[0_16px_45px_rgba(15,23,42,0.06)]">
+            <div className="app-panel-subtle shadow-[0_16px_45px_rgba(15,23,42,0.06)]">
               <p>
-                <span className="font-medium text-slate-950">Requests found:</span>{" "}
+                <span className="font-medium text-slate-900">Requests found:</span>{" "}
                 {workOrders.length}
               </p>
               <p className="text-slate-500">
@@ -67,7 +63,7 @@ export default async function TenantRequestsPage() {
               {workOrders.map((workOrder) => (
                 <article
                   key={workOrder.id}
-                  className="rounded-[1.5rem] border border-slate-200 bg-white/85 p-6 shadow-[0_18px_48px_rgba(15,23,42,0.08)]"
+                  className="app-panel-muted"
                 >
                   <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                     <div className="space-y-3">
@@ -90,7 +86,7 @@ export default async function TenantRequestsPage() {
                           </span>
                         ) : null}
                       </div>
-                      <h2 className="text-2xl font-semibold tracking-tight text-slate-950">
+                      <h2 className="text-2xl font-semibold tracking-tight text-slate-900">
                         {workOrder.category}
                       </h2>
                       <div className="space-y-1 text-sm leading-7 text-slate-600">
@@ -106,10 +102,7 @@ export default async function TenantRequestsPage() {
                     </div>
 
                     <div className="flex flex-wrap gap-3">
-                      <Link
-                        href={`/tenant/requests/${workOrder.id}`}
-                        className="inline-flex rounded-full bg-sky-600 px-5 py-3 text-sm font-medium text-white transition hover:bg-sky-500"
-                      >
+                      <Link href={`/tenant/requests/${workOrder.id}`} className="app-button-primary">
                         Open Request
                       </Link>
                     </div>
@@ -121,16 +114,10 @@ export default async function TenantRequestsPage() {
         )}
 
         <div className="flex flex-wrap gap-3">
-          <Link
-            href="/tenant/sign-in"
-            className="rounded-full border border-slate-300 bg-white px-5 py-3 text-sm font-medium text-slate-700 transition hover:border-sky-300 hover:bg-sky-50"
-          >
+          <Link href="/tenant/sign-in" className="app-button-secondary">
             Back to Tenant Sign-In
           </Link>
-          <Link
-            href="/"
-            className="rounded-full border border-slate-300 bg-white px-5 py-3 text-sm font-medium text-slate-700 transition hover:border-sky-300 hover:bg-sky-50"
-          >
+          <Link href="/" className="app-button-secondary">
             Back Home
           </Link>
         </div>
