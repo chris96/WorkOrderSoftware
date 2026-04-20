@@ -6,6 +6,9 @@ import { TenantSignInForm } from "./tenant-sign-in-form";
 
 export default async function TenantSignInPage() {
   const tenantUser = await getOptionalTenantUser();
+  const alreadySignedInMessage = tenantUser
+    ? `You are already signed in as ${tenantUser.email}. You can go directly to your request history.`
+    : null;
 
   return (
     <main className="flex flex-1 items-center justify-center px-6 py-16">
@@ -21,10 +24,9 @@ export default async function TenantSignInPage() {
           secure sign-in link.
         </p>
 
-        {tenantUser ? (
+        {alreadySignedInMessage ? (
           <div className="mt-8 rounded-[1.25rem] border border-emerald-300/20 bg-emerald-400/10 px-4 py-3 text-sm leading-7 text-emerald-50">
-            You are already signed in as {tenantUser.email}. You can go directly to
-            your request history.
+            {alreadySignedInMessage}
           </div>
         ) : null}
 

@@ -7,6 +7,7 @@ import {
   getWorkOrderStatusClassName,
   type WorkOrderStatus,
 } from "@/lib/work-orders";
+import { TenantSignOutButton } from "@/app/tenant/tenant-sign-out-button";
 
 export default async function TenantRequestsPage() {
   const { tenantUser, workOrders } = await listTenantWorkOrders();
@@ -15,17 +16,23 @@ export default async function TenantRequestsPage() {
     <main className="px-6 py-12 md:px-8 md:py-16">
       <div className="mx-auto w-full max-w-5xl space-y-8">
         <section className="rounded-[2rem] border border-white/10 bg-white/5 p-8 shadow-2xl shadow-black/30 backdrop-blur md:p-10">
-          <p className="text-sm uppercase tracking-[0.3em] text-amber-300">
-            Tenant Portal
-          </p>
-          <h1 className="mt-4 text-4xl font-semibold tracking-tight text-white md:text-5xl">
-            Your request history
-          </h1>
-          <p className="mt-4 max-w-3xl text-lg leading-8 text-stone-300">
-            This view now loads real requests for the authenticated tenant email and
-            excludes staff-only fields. Each detail page is protected by a server-side
-            ownership check.
-          </p>
+          <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+            <div>
+              <p className="text-sm uppercase tracking-[0.3em] text-amber-300">
+                Tenant Portal
+              </p>
+              <h1 className="mt-4 text-4xl font-semibold tracking-tight text-white md:text-5xl">
+                Your request history
+              </h1>
+              <p className="mt-4 max-w-3xl text-lg leading-8 text-stone-300">
+                This view loads real requests for the authenticated tenant email and
+                excludes staff-only fields. Each detail page is protected by a
+                server-side ownership check.
+              </p>
+            </div>
+
+            <TenantSignOutButton />
+          </div>
 
           <div className="mt-8 rounded-[1.5rem] border border-white/10 bg-black/20 p-5 text-sm leading-7 text-stone-300">
             <p>

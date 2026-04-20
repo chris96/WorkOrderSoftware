@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { TenantSignOutButton } from "@/app/tenant/tenant-sign-out-button";
 import { requireTenantOwnedWorkOrder } from "@/lib/tenant-auth";
 import {
   formatWorkOrderDateTime,
@@ -11,12 +12,17 @@ import { createAdminSupabaseClient } from "@/lib/supabase/server";
 
 export default async function TenantRequestDetailPage({
   params,
+  searchParams,
 }: {
   params: Promise<{
     id: string;
   }>;
+  searchParams: Promise<{
+    report?: string;
+  }>;
 }) {
   const { id } = await params;
+  const { report: reportState } = await searchParams;
   const { tenantUser, workOrder } = await requireTenantOwnedWorkOrder(id);
   const supabase = createAdminSupabaseClient();
 
@@ -37,6 +43,14 @@ export default async function TenantRequestDetailPage({
     .select("delivery_status, generated_at, delivered_at")
     .eq("work_order_id", workOrder.id)
     .maybeSingle();
+
+  let reportMessage: string | null = null;
+
+  if (reportState === "not_ready") {
+    reportMessage = "The final report is not available yet.";
+  } else if (reportState === "lookup_error" || reportState === "access_error") {
+    reportMessage = "The final report could not be opened right now.";
+  }
 
   return (
     <main className="px-6 py-12 md:px-8 md:py-16">
@@ -71,6 +85,7 @@ export default async function TenantRequestDetailPage({
             </div>
 
             <div className="flex flex-wrap gap-3">
+              <TenantSignOutButton />
               <Link
                 href="/tenant/requests"
                 className="inline-flex rounded-full border border-white/15 px-5 py-3 text-sm font-medium text-white transition hover:border-white/30 hover:bg-white/5"
@@ -123,9 +138,23 @@ export default async function TenantRequestDetailPage({
                 <span className="font-medium text-white">Delivered:</span>{" "}
                 {formatWorkOrderDateTime(report?.delivered_at ?? null)}
               </p>
-              <p className="text-stone-400">
-                Secure tenant report access will be wired in a later Phase 6 step.
-              </p>
+              {reportMessage ? (
+                <p className="rounded-[1rem] border border-rose-300/20 bg-rose-400/10 px-4 py-3 text-rose-100">
+                  {reportMessage}
+                </p>
+              ) : null}
+              {report?.generated_at ? (
+                <a
+                  href={`/api/tenant/reports/${workOrder.id}`}
+                  className="inline-flex rounded-full bg-amber-300 px-5 py-3 text-sm font-medium text-stone-950 transition hover:bg-amber-200"
+                >
+                  Open Final Report
+                </a>
+              ) : (
+                <p className="text-stone-400">
+                  The final report is not ready yet for this request.
+                </p>
+              )}
             </div>
           </div>
         </section>
