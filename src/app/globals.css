@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 :root {
-  --background: #0c0a09;
-  --foreground: #f5f5f4;
+  --background: #f8fafc;
+  --foreground: #0f172a;
 }
 
 @theme inline {
@@ -18,8 +18,9 @@
 
 html {
   background:
-    radial-gradient(circle at top, rgba(245, 158, 11, 0.16), transparent 30%),
-    linear-gradient(180deg, #1c1917 0%, #0c0a09 55%, #09090b 100%);
+    radial-gradient(circle at top, rgba(96, 165, 250, 0.22), transparent 30%),
+    radial-gradient(circle at 85% 10%, rgba(191, 219, 254, 0.45), transparent 22%),
+    linear-gradient(180deg, #f8fbff 0%, #eef4fb 52%, #e7eef7 100%);
 }
 
 body {
@@ -30,4 +31,123 @@ body {
 
 a {
   text-decoration: none;
+}
+
+@layer components {
+  .app-shell {
+    @apply flex flex-1 items-center justify-center px-6 py-16;
+  }
+
+  .app-shell-page {
+    @apply px-6 py-12 md:px-8 md:py-16;
+  }
+
+  .app-container {
+    @apply mx-auto w-full max-w-5xl;
+  }
+
+  .app-panel {
+    @apply rounded-[2rem] border border-slate-200/90 bg-white/82 p-8 shadow-[0_28px_90px_rgba(15,23,42,0.08)] backdrop-blur md:p-10;
+  }
+
+  .app-panel-muted {
+    @apply rounded-[1.5rem] border border-slate-200/90 bg-slate-50/88 p-6 shadow-[0_18px_48px_rgba(15,23,42,0.06)];
+  }
+
+  .app-panel-subtle {
+    @apply rounded-[1.5rem] border border-slate-200/90 bg-white/62 p-5 text-sm leading-7 text-slate-700;
+  }
+
+  .app-panel-empty {
+    @apply rounded-[2rem] border border-dashed border-slate-300/90 bg-white/68 px-6 py-8 text-center shadow-[0_16px_45px_rgba(15,23,42,0.06)];
+  }
+
+  .app-kicker {
+    @apply text-sm uppercase tracking-[0.3em] text-blue-700;
+  }
+
+  .app-section-label {
+    @apply text-sm uppercase tracking-[0.25em] text-slate-500;
+  }
+
+  .app-heading {
+    @apply mt-4 text-4xl font-semibold tracking-tight text-slate-900 md:text-5xl;
+  }
+
+  .app-copy {
+    @apply mt-4 text-lg leading-8 text-slate-600;
+  }
+
+  .app-button-primary {
+    @apply inline-flex rounded-full bg-blue-600 px-5 py-3 text-sm font-medium text-white shadow-[0_12px_30px_rgba(37,99,235,0.24)] transition hover:bg-blue-700;
+  }
+
+  .app-button-secondary {
+    @apply inline-flex rounded-full border border-slate-300 bg-white/90 px-5 py-3 text-sm font-medium text-slate-700 transition hover:border-blue-300 hover:bg-blue-50;
+  }
+
+  .app-button-secondary:disabled,
+  .app-button-primary:disabled {
+    @apply cursor-not-allowed opacity-60;
+  }
+
+  .app-alert-info {
+    @apply rounded-[1.25rem] border border-slate-200 bg-white/85 px-4 py-3 text-sm leading-7 text-slate-700;
+  }
+
+  .app-alert-success {
+    @apply rounded-[1.25rem] border border-blue-200 bg-blue-50 px-4 py-3 text-sm leading-7 text-slate-900;
+  }
+
+  .app-alert-error {
+    @apply rounded-[1.25rem] border border-rose-200 bg-rose-50 px-4 py-3 text-sm leading-7 text-rose-700;
+  }
+
+  .app-input {
+    @apply w-full rounded-[1.5rem] border border-slate-200 bg-white/92 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:bg-white disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  .app-page-grid {
+    @apply mx-auto grid w-full max-w-7xl gap-8 xl:grid-cols-[0.9fr_1.1fr];
+  }
+
+  .app-aside {
+    @apply rounded-[2rem] border border-slate-200/90 bg-white/82 p-8 shadow-[0_28px_90px_rgba(15,23,42,0.08)] backdrop-blur md:p-10;
+  }
+
+  .app-form-panel {
+    @apply rounded-[2rem] border border-slate-200/90 bg-white/86 p-6 shadow-[0_28px_90px_rgba(15,23,42,0.08)] backdrop-blur md:p-8;
+  }
+
+  .app-note-info {
+    @apply rounded-[1.5rem] border border-slate-200 bg-white/78 p-5;
+  }
+
+  .app-note-accent {
+    @apply rounded-[1.5rem] border border-blue-200 bg-blue-50/85 p-5;
+  }
+
+  .app-label {
+    @apply text-sm font-medium text-slate-700;
+  }
+
+  .app-help {
+    @apply text-sm leading-7 text-slate-500;
+  }
+
+  .app-divider {
+    @apply border-t border-slate-200;
+  }
+
+  .app-stat-card {
+    @apply rounded-[1.5rem] border border-slate-200/90 bg-white/72 p-5 shadow-[0_10px_30px_rgba(15,23,42,0.05)];
+  }
+
+  .app-filter-shell {
+    @apply mt-8 grid gap-4 rounded-[1.75rem] border border-slate-200/90 bg-white/72 p-5 md:grid-cols-[1fr_1fr_1fr_auto_auto];
+  }
+
+  .app-chip {
+    @apply rounded-full border border-slate-200 bg-white/90 px-3 py-1 text-xs uppercase tracking-[0.24em] text-slate-600;
+  }
 }

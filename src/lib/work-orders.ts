@@ -53,12 +53,12 @@ export function formatWorkOrderStatus(status: WorkOrderStatus) {
 export function getWorkOrderStatusClassName(status: WorkOrderStatus) {
   switch (status) {
     case "in_progress":
-      return "border-sky-300/20 bg-sky-400/10 text-sky-100";
+      return "border-sky-200 bg-sky-100 text-sky-900";
     case "waiting_on_parts":
-      return "border-violet-300/20 bg-violet-400/10 text-violet-100";
+      return "border-violet-200 bg-violet-100 text-violet-900";
     case "closed":
-      return "border-emerald-300/20 bg-emerald-400/10 text-emerald-100";
+      return "border-emerald-200 bg-emerald-100 text-emerald-900";
     default:
-      return "border-amber-300/20 bg-amber-300/10 text-amber-100";
+      return "border-amber-200 bg-amber-100 text-amber-900";
   }
 }
