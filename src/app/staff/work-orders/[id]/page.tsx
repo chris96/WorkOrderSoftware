@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { requireStaffUser } from "@/lib/staff-auth";
+import { attachSignedUrls } from "@/lib/supabase/storage";
 import { createAdminSupabaseClient } from "@/lib/supabase/server";
 import {
   formatWorkOrderDateTime,
@@ -67,6 +68,8 @@ type ReportRow = {
   storage_bucket: string;
   storage_path: string;
 };
+
+const SIGNED_URL_TTL_SECONDS = 60 * 60;
 
 function getTimelineTitle(event: WorkOrderEventRow) {
   if (event.event_type === "submitted") {
@@ -174,18 +177,25 @@ export default async function StaffWorkOrderDetailPage({
   }
 
   const workOrder = workOrderResult.data as WorkOrderDetailRow;
+  const allPhotos = (photosResult.data ?? []) as WorkOrderPhotoRow[];
 
-  let unitNumber = "Unknown unit";
+  const [unitResult, photoLinks] = await Promise.all([
+    workOrder.unit_id
+      ? supabase
+          .from("units")
+          .select("unit_number")
+          .eq("id", workOrder.unit_id)
+          .single()
+      : Promise.resolve({ data: null, error: null }),
+    attachSignedUrls(
+      supabase,
+      allPhotos,
+      SIGNED_URL_TTL_SECONDS,
+      "Photo preview links could not be prepared."
+    ),
+  ]);
 
-  if (workOrder.unit_id) {
-    const { data: unit } = await supabase
-      .from("units")
-      .select("unit_number")
-      .eq("id", workOrder.unit_id)
-      .single();
-
-    unitNumber = unit?.unit_number ?? unitNumber;
-  }
+  const unitNumber = unitResult.data?.unit_number ?? "Unknown unit";
 
   const staffUserMap = new Map<string, { fullName: string; role: string }>();
 
@@ -202,20 +212,6 @@ export default async function StaffWorkOrderDetailPage({
   const closedByUser = workOrder.closed_by_user_id
     ? staffUserMap.get(workOrder.closed_by_user_id)
     : null;
-
-  const allPhotos = (photosResult.data ?? []) as WorkOrderPhotoRow[];
-  const photoLinks = await Promise.all(
-    allPhotos.map(async (photo) => {
-      const { data } = await supabase.storage
-        .from(photo.storage_bucket)
-        .createSignedUrl(photo.storage_path, 60 * 60);
-
-      return {
-        ...photo,
-        signedUrl: data?.signedUrl ?? null,
-      };
-    })
-  );
   const intakePhotoLinks = photoLinks.filter((photo) => photo.photo_type === "intake");
   const closeoutPhotoLinks = photoLinks.filter(
     (photo) => photo.photo_type === "closeout"
