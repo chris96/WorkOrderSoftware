@@ -48,13 +48,13 @@ export function InternalNoteForm({ workOrderId }: InternalNoteFormProps) {
   return (
     <form className="space-y-4" onSubmit={handleSubmit}>
       {message ? (
-        <div className="rounded-[1.25rem] border border-white/10 bg-black/20 px-4 py-3 text-sm leading-7 text-stone-200">
+        <div className="rounded-[1.25rem] border border-slate-200 bg-white/80 px-4 py-3 text-sm leading-7 text-slate-700">
           {message}
         </div>
       ) : null}
 
       <div className="space-y-2">
-        <label htmlFor="internal-note" className="text-sm font-medium text-stone-200">
+        <label htmlFor="internal-note" className="app-label">
           Add an internal note
         </label>
         <textarea
@@ -63,14 +63,14 @@ export function InternalNoteForm({ workOrderId }: InternalNoteFormProps) {
           value={note}
           onChange={(event) => setNote(event.target.value)}
           placeholder="Record private context for staff only. Tenants will never see these notes."
-          className="w-full rounded-[1.5rem] border border-white/10 bg-white/5 px-4 py-4 text-sm leading-7 text-stone-100 outline-none transition placeholder:text-stone-500 focus:border-amber-300/60"
+          className="w-full rounded-[1.5rem] border border-slate-200 bg-white/92 px-4 py-4 text-sm leading-7 text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-500"
         />
       </div>
 
       <button
         type="submit"
         disabled={isPending}
-        className="w-full rounded-full border border-white/15 px-5 py-3 text-sm font-medium text-white transition hover:border-white/30 hover:bg-white/5 disabled:cursor-not-allowed disabled:border-white/10 disabled:text-stone-500"
+        className="app-button-secondary w-full justify-center disabled:text-slate-400"
       >
         {isPending ? "Saving Note..." : "Save Internal Note"}
       </button>

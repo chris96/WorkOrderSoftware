@@ -7,11 +7,11 @@ import { FormEvent, useState } from "react";
 import { createBrowserSupabaseClient } from "@/lib/supabase/browser";
 
 function getInputClassName(hasError: boolean) {
-  return `w-full rounded-2xl border px-4 py-3 text-sm text-stone-100 outline-none transition ${
+  return `w-full rounded-2xl border px-4 py-3 text-sm text-slate-900 outline-none transition ${
     hasError
-      ? "border-rose-400/80 bg-rose-500/8 focus:border-rose-300"
-      : "border-white/10 bg-white/5 focus:border-amber-300/60 focus:bg-white/8"
-  } placeholder:text-stone-500`;
+      ? "border-rose-300 bg-rose-50 focus:border-rose-400"
+      : "border-slate-200 bg-white/92 focus:border-blue-500"
+  } placeholder:text-slate-400`;
 }
 
 type SignInFormProps = {
@@ -72,13 +72,13 @@ export function SignInForm({ initialMessage }: SignInFormProps) {
   return (
     <form className="space-y-6" onSubmit={handleSubmit} noValidate>
       {message ? (
-        <div className="rounded-[1.5rem] border border-rose-300/25 bg-rose-400/10 px-5 py-4 text-sm leading-7 text-rose-100">
+        <div className="rounded-[1.5rem] border border-rose-200 bg-rose-50 px-5 py-4 text-sm leading-7 text-rose-800">
           {message}
         </div>
       ) : null}
 
       <div className="space-y-2">
-        <label htmlFor="email" className="text-sm font-medium text-stone-200">
+        <label htmlFor="email" className="app-label">
           Staff email
         </label>
         <input
@@ -95,11 +95,11 @@ export function SignInForm({ initialMessage }: SignInFormProps) {
             }
           }}
         />
-        {emailError ? <p className="text-sm text-rose-300">{emailError}</p> : null}
+        {emailError ? <p className="text-sm text-rose-700">{emailError}</p> : null}
       </div>
 
       <div className="space-y-2">
-        <label htmlFor="password" className="text-sm font-medium text-stone-200">
+        <label htmlFor="password" className="app-label">
           Password
         </label>
         <input
@@ -117,12 +117,12 @@ export function SignInForm({ initialMessage }: SignInFormProps) {
           }}
         />
         {passwordError ? (
-          <p className="text-sm text-rose-300">{passwordError}</p>
+          <p className="text-sm text-rose-700">{passwordError}</p>
         ) : null}
       </div>
 
-      <div className="flex flex-col gap-3 border-t border-white/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-sm leading-7 text-stone-400">
+      <div className="app-divider flex flex-col gap-3 pt-6 sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-sm leading-7 text-slate-500">
           Staff access is limited to the super and backup accounts created
           through the bootstrap flow.
         </p>
@@ -130,14 +130,14 @@ export function SignInForm({ initialMessage }: SignInFormProps) {
         <div className="flex flex-col gap-3 sm:flex-row">
           <Link
             href="/staff/bootstrap"
-            className="inline-flex items-center justify-center rounded-full border border-white/15 px-5 py-3 text-sm font-medium text-white transition hover:border-white/30 hover:bg-white/5"
+            className="app-button-secondary items-center justify-center"
           >
             Bootstrap Setup
           </Link>
           <button
             type="submit"
             disabled={isSubmitting}
-            className="rounded-full bg-amber-300 px-6 py-3 text-sm font-semibold text-stone-950 transition hover:bg-amber-200 disabled:cursor-not-allowed disabled:bg-amber-200/60"
+            className="app-button-primary px-6 font-semibold disabled:bg-blue-300"
           >
             {isSubmitting ? "Signing In..." : "Sign In"}
           </button>

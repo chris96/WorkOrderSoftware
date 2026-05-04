@@ -1,5 +1,7 @@
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
+import { STAFF_USER_ID_HEADER } from "@/lib/supabase/request-auth";
 import { createAdminSupabaseClient, createServerSupabaseClient } from "@/lib/supabase/server";
 
 export const staffRoles = ["super", "backup"] as const;
@@ -13,13 +15,26 @@ export type StaffUser = {
   role: StaffRole;
 };
 
-export async function getOptionalStaffUser() {
+async function getAuthenticatedStaffUserId() {
+  const requestHeaders = await headers();
+  const proxiedStaffUserId = requestHeaders.get(STAFF_USER_ID_HEADER);
+
+  if (proxiedStaffUserId) {
+    return proxiedStaffUserId;
+  }
+
   const supabase = await createServerSupabaseClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) {
+  return user?.id ?? null;
+}
+
+export async function getOptionalStaffUser() {
+  const staffUserId = await getAuthenticatedStaffUserId();
+
+  if (!staffUserId) {
     return null;
   }
 
@@ -27,7 +42,7 @@ export async function getOptionalStaffUser() {
   const { data: staffUser } = await adminSupabase
     .from("users")
     .select("id, email, full_name, role")
-    .eq("id", user.id)
+    .eq("id", staffUserId)
     .eq("is_active", true)
     .in("role", [...staffRoles])
     .maybeSingle();

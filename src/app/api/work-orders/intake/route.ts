@@ -7,9 +7,33 @@ import { workOrderRequestDataSchema } from "@/lib/validation/work-order-request"
 
 const STORAGE_BUCKET = "work-order-photos";
 const DUPLICATE_WINDOW_MINUTES = 10;
+const PHOTO_UPLOAD_CONCURRENCY = 4;
 
 function sanitizeFileName(name: string) {
   return name.replace(/[^a-zA-Z0-9._-]/g, "-").toLowerCase();
+}
+
+async function mapWithConcurrency<T, TResult>(
+  items: T[],
+  concurrency: number,
+  worker: (item: T, index: number) => Promise<TResult>
+) {
+  const results = new Array<TResult>(items.length);
+  let nextIndex = 0;
+
+  async function runWorker() {
+    while (nextIndex < items.length) {
+      const currentIndex = nextIndex;
+      nextIndex += 1;
+      results[currentIndex] = await worker(items[currentIndex]!, currentIndex);
+    }
+  }
+
+  await Promise.all(
+    Array.from({ length: Math.min(concurrency, items.length) }, () => runWorker())
+  );
+
+  return results;
 }
 
 export async function POST(request: Request) {
@@ -124,43 +148,40 @@ export async function POST(request: Request) {
 
     workOrderId = createdWorkOrder.id;
 
-    const uploadedPhotos: Array<{
-      contentType: string;
-      fileName: string;
-      path: string;
-      size: number;
-    }> = [];
+    const uploadedPhotos = await mapWithConcurrency(
+      files,
+      PHOTO_UPLOAD_CONCURRENCY,
+      async (file) => {
+        const extension = file.name.includes(".")
+          ? file.name.split(".").pop()
+          : undefined;
+        const safeName = sanitizeFileName(file.name);
+        const uniqueFileName = extension
+          ? `${randomUUID()}.${extension.toLowerCase()}`
+          : `${randomUUID()}-${safeName}`;
+        const storagePath = `intake/${workOrderId}/${uniqueFileName}`;
 
-    for (const file of files) {
-      const extension = file.name.includes(".")
-        ? file.name.split(".").pop()
-        : undefined;
-      const safeName = sanitizeFileName(file.name);
-      const uniqueFileName = extension
-        ? `${randomUUID()}.${extension.toLowerCase()}`
-        : `${randomUUID()}-${safeName}`;
-      const storagePath = `intake/${workOrderId}/${uniqueFileName}`;
+        const { error: uploadError } = await supabase.storage
+          .from(STORAGE_BUCKET)
+          .upload(storagePath, file, {
+            cacheControl: "3600",
+            contentType: file.type,
+            upsert: false,
+          });
 
-      const { error: uploadError } = await supabase.storage
-        .from(STORAGE_BUCKET)
-        .upload(storagePath, file, {
-          cacheControl: "3600",
+        if (uploadError) {
+          throw new Error(uploadError.message);
+        }
+
+        uploadedStoragePaths.push(storagePath);
+        return {
           contentType: file.type,
-          upsert: false,
-        });
-
-      if (uploadError) {
-        throw new Error(uploadError.message);
+          fileName: safeName,
+          path: storagePath,
+          size: file.size,
+        };
       }
-
-      uploadedStoragePaths.push(storagePath);
-      uploadedPhotos.push({
-        contentType: file.type,
-        fileName: safeName,
-        path: storagePath,
-        size: file.size,
-      });
-    }
+    );
 
     if (uploadedPhotos.length > 0) {
       const { error: photoInsertError } = await supabase

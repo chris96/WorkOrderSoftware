@@ -1,3 +1,4 @@
+import { attachSignedUrls } from "@/lib/supabase/storage";
 import { createAdminSupabaseClient } from "@/lib/supabase/server";
 import { formatWorkOrderDateTime, type WorkOrderStatus } from "@/lib/work-orders";
 
@@ -54,6 +55,8 @@ export type RepairReportPayload = {
   workOrderId: string;
 };
 
+const SIGNED_URL_TTL_SECONDS = 60 * 60;
+
 export async function getRepairReportPayload(workOrderId: string) {
   const supabase = createAdminSupabaseClient();
 
@@ -91,64 +94,51 @@ export async function getRepairReportPayload(workOrderId: string) {
     throw new Error("Repair summary is required before generating a report.");
   }
 
-  let unitNumber = "Unknown unit";
-
-  if (reportWorkOrder.unit_id) {
-    const { data: unit, error: unitError } = await supabase
-      .from("units")
-      .select("unit_number")
-      .eq("id", reportWorkOrder.unit_id)
-      .single();
-
-    if (unitError) {
-      throw new Error("Unit information could not be loaded for report generation.");
-    }
-
-    unitNumber = unit?.unit_number ?? unitNumber;
-  }
-
-  let closedByName: string | null = null;
-
-  if (reportWorkOrder.closed_by_user_id) {
-    const { data: closer, error: closerError } = await supabase
-      .from("users")
-      .select("full_name")
-      .eq("id", reportWorkOrder.closed_by_user_id)
-      .single();
-
-    if (closerError) {
-      throw new Error("Closing staff information could not be loaded for report generation.");
-    }
-
-    closedByName = closer?.full_name ?? null;
-  }
-
   const reportPhotos = (photos ?? []) as ReportPhotoRow[];
   const closeoutPhotos = reportPhotos.filter((photo) => photo.photo_type === "closeout");
+  const [unitResult, closerResult, closeoutPhotosWithUrls] = await Promise.all([
+    reportWorkOrder.unit_id
+      ? supabase
+          .from("units")
+          .select("unit_number")
+          .eq("id", reportWorkOrder.unit_id)
+          .single()
+      : Promise.resolve({ data: null, error: null }),
+    reportWorkOrder.closed_by_user_id
+      ? supabase
+          .from("users")
+          .select("full_name")
+          .eq("id", reportWorkOrder.closed_by_user_id)
+          .single()
+      : Promise.resolve({ data: null, error: null }),
+    attachSignedUrls(
+      supabase,
+      closeoutPhotos,
+      SIGNED_URL_TTL_SECONDS,
+      "Closeout photo access could not be prepared for report generation."
+    ),
+  ]);
 
-  const closeoutPhotosWithUrls = await Promise.all(
-    closeoutPhotos.map(async (photo, index) => {
-      const { data, error } = await supabase.storage
-        .from(photo.storage_bucket)
-        .createSignedUrl(photo.storage_path, 60 * 60);
+  if (unitResult.error) {
+    throw new Error("Unit information could not be loaded for report generation.");
+  }
 
-      if (error) {
-        throw new Error("Closeout photo access could not be prepared for report generation.");
-      }
+  if (closerResult.error) {
+    throw new Error("Closing staff information could not be loaded for report generation.");
+  }
 
-      return {
-        contentType: photo.content_type,
-        createdAt: photo.created_at,
-        label: `Closeout photo ${index + 1}`,
-        signedUrl: data?.signedUrl ?? null,
-      };
-    })
-  );
+  const unitNumber = unitResult.data?.unit_number ?? "Unknown unit";
+  const closedByName = closerResult.data?.full_name ?? null;
 
   return {
     closeoutDate: reportWorkOrder.closed_at,
     closeoutDateLabel: formatWorkOrderDateTime(reportWorkOrder.closed_at),
-    closeoutPhotos: closeoutPhotosWithUrls,
+    closeoutPhotos: closeoutPhotosWithUrls.map((photo, index) => ({
+      contentType: photo.content_type,
+      createdAt: photo.created_at,
+      label: `Closeout photo ${index + 1}`,
+      signedUrl: photo.signedUrl,
+    })),
     closedByName,
     emergencyLabel: reportWorkOrder.is_emergency ? "Emergency" : "Standard",
     materialsUsed: reportWorkOrder.materials_used,
