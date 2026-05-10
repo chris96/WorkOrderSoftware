@@ -238,14 +238,14 @@ export default async function StaffWorkOrderDetailPage({
   return (
     <main className="px-6 py-12 md:px-8 md:py-16">
       <div className="mx-auto w-full max-w-7xl space-y-8">
-        <section className="rounded-[2rem] border border-white/10 bg-white/5 p-8 shadow-2xl shadow-black/30 backdrop-blur md:p-10">
+        <section className="app-panel">
           <div className="flex flex-col gap-6 xl:flex-row xl:items-end xl:justify-between">
             <div className="max-w-4xl space-y-4">
-              <p className="text-sm uppercase tracking-[0.3em] text-amber-300">
+              <p className="app-kicker">
                 Staff Request Detail
               </p>
               <div className="flex flex-wrap items-center gap-3">
-                <span className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs uppercase tracking-[0.24em] text-stone-300">
+                <span className="app-chip">
                   Unit {unitNumber}
                 </span>
                 <span
@@ -254,15 +254,15 @@ export default async function StaffWorkOrderDetailPage({
                   {formatWorkOrderStatus(workOrder.status)}
                 </span>
                 {workOrder.is_emergency ? (
-                  <span className="rounded-full border border-rose-300/20 bg-rose-400/10 px-3 py-1 text-xs font-medium uppercase tracking-[0.18em] text-rose-100">
+                  <span className="rounded-full border border-rose-200 bg-rose-100 px-3 py-1 text-xs font-medium uppercase tracking-[0.18em] text-rose-900">
                     Emergency
                   </span>
                 ) : null}
               </div>
-              <h1 className="text-4xl font-semibold tracking-tight text-white md:text-5xl">
+              <h1 className="text-4xl font-semibold tracking-tight text-slate-900 md:text-5xl">
                 {workOrder.category}
               </h1>
-              <p className="max-w-3xl text-lg leading-8 text-stone-300">
+              <p className="max-w-3xl text-lg leading-8 text-slate-600">
                 {workOrder.description}
               </p>
             </div>
@@ -273,14 +273,14 @@ export default async function StaffWorkOrderDetailPage({
                   href={`/api/staff/work-orders/${workOrder.id}/report`}
                   target="_blank"
                   rel="noreferrer"
-                  className="inline-flex rounded-full bg-amber-300 px-5 py-3 text-sm font-medium text-stone-950 transition hover:bg-amber-200"
+                  className="app-button-primary"
                 >
                   Preview Repair Report
                 </a>
               ) : null}
               <Link
                 href="/staff"
-                className="inline-flex rounded-full border border-white/15 px-5 py-3 text-sm font-medium text-white transition hover:border-white/30 hover:bg-white/5"
+                className="app-button-secondary"
               >
                 Back to Dashboard
               </Link>
@@ -288,41 +288,41 @@ export default async function StaffWorkOrderDetailPage({
           </div>
 
           <div className="mt-8 grid gap-4 md:grid-cols-4">
-            <div className="rounded-[1.5rem] border border-white/10 bg-black/20 p-5">
-              <p className="text-sm uppercase tracking-[0.2em] text-stone-500">
+            <div className="app-panel-subtle">
+              <p className="text-sm uppercase tracking-[0.2em] text-slate-500">
                 Request ID
               </p>
-              <p className="mt-3 text-lg font-semibold text-amber-200">
+              <p className="mt-3 text-lg font-semibold text-blue-700">
                 {workOrder.id}
               </p>
             </div>
 
-            <div className="rounded-[1.5rem] border border-white/10 bg-black/20 p-5">
-              <p className="text-sm uppercase tracking-[0.2em] text-stone-500">
+            <div className="app-panel-subtle">
+              <p className="text-sm uppercase tracking-[0.2em] text-slate-500">
                 Submitted
               </p>
-              <p className="mt-3 text-lg font-semibold text-white">
+              <p className="mt-3 text-lg font-semibold text-slate-900">
                 {formatWorkOrderDateTime(workOrder.submitted_at)}
               </p>
             </div>
 
-            <div className="rounded-[1.5rem] border border-white/10 bg-black/20 p-5">
-              <p className="text-sm uppercase tracking-[0.2em] text-stone-500">
+            <div className="app-panel-subtle">
+              <p className="text-sm uppercase tracking-[0.2em] text-slate-500">
                 Assigned
               </p>
-              <p className="mt-3 text-lg font-semibold text-white">
+              <p className="mt-3 text-lg font-semibold text-slate-900">
                 {assignedUser?.fullName || "Unassigned"}
               </p>
-              <p className="mt-1 text-sm text-stone-400">
+              <p className="mt-1 text-sm text-slate-500">
                 {assignedUser?.role || "No staff owner yet"}
               </p>
             </div>
 
-            <div className="rounded-[1.5rem] border border-white/10 bg-black/20 p-5">
-              <p className="text-sm uppercase tracking-[0.2em] text-stone-500">
+            <div className="app-panel-subtle">
+              <p className="text-sm uppercase tracking-[0.2em] text-slate-500">
                 Closed
               </p>
-              <p className="mt-3 text-lg font-semibold text-white">
+              <p className="mt-3 text-lg font-semibold text-slate-900">
                 {formatWorkOrderDateTime(workOrder.closed_at)}
               </p>
             </div>
@@ -331,24 +331,24 @@ export default async function StaffWorkOrderDetailPage({
 
         <div className="grid gap-8 xl:grid-cols-[1.15fr_0.85fr]">
           <section className="space-y-8">
-            <section className="rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-2xl shadow-black/30 backdrop-blur md:p-8">
+            <section className="app-panel md:p-8">
               <div className="flex flex-col gap-6 md:grid md:grid-cols-2">
-                <div className="rounded-[1.5rem] border border-white/10 bg-black/20 p-5">
-                  <p className="text-sm uppercase tracking-[0.2em] text-stone-500">
+                <div className="app-panel-subtle">
+                  <p className="text-sm uppercase tracking-[0.2em] text-slate-500">
                     Tenant contact
                   </p>
-                  <div className="mt-4 space-y-2 text-sm leading-7 text-stone-300">
-                    <p className="font-medium text-white">{workOrder.tenant_name}</p>
+                  <div className="mt-4 space-y-2 text-sm leading-7 text-slate-600">
+                    <p className="font-medium text-slate-900">{workOrder.tenant_name}</p>
                     <p>{workOrder.tenant_email}</p>
                     <p>{workOrder.tenant_phone || "No phone provided"}</p>
                   </div>
                 </div>
 
-                <div className="rounded-[1.5rem] border border-white/10 bg-black/20 p-5">
-                  <p className="text-sm uppercase tracking-[0.2em] text-stone-500">
+                <div className="app-panel-subtle">
+                  <p className="text-sm uppercase tracking-[0.2em] text-slate-500">
                     Request summary
                   </p>
-                  <div className="mt-4 space-y-2 text-sm leading-7 text-stone-300">
+                  <div className="mt-4 space-y-2 text-sm leading-7 text-slate-600">
                     <p>Category: {workOrder.category}</p>
                     <p>Status: {formatWorkOrderStatus(workOrder.status)}</p>
                     <p>
@@ -359,24 +359,24 @@ export default async function StaffWorkOrderDetailPage({
               </div>
             </section>
 
-            <section className="rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-2xl shadow-black/30 backdrop-blur md:p-8">
+            <section className="app-panel md:p-8">
               <div className="flex items-center justify-between gap-4">
                 <div>
-                  <p className="text-sm uppercase tracking-[0.25em] text-stone-400">
+                  <p className="text-sm uppercase tracking-[0.25em] text-slate-500">
                     Intake Photos
                   </p>
-                  <h2 className="mt-2 text-3xl font-semibold tracking-tight text-white">
+                  <h2 className="mt-2 text-3xl font-semibold tracking-tight text-slate-900">
                     Photo attachments
                   </h2>
                 </div>
               </div>
 
               {intakePhotoLinks.length === 0 ? (
-                <div className="mt-6 rounded-[1.75rem] border border-dashed border-white/10 bg-black/20 px-6 py-8 text-center">
-                  <p className="text-lg font-medium text-white">
+                <div className="app-panel-empty mt-6">
+                  <p className="text-lg font-medium text-slate-900">
                     No intake photos were uploaded.
                   </p>
-                  <p className="mt-3 text-sm leading-7 text-stone-400">
+                  <p className="mt-3 text-sm leading-7 text-slate-500">
                     Future submissions with photos will appear here with private
                     signed links for staff review.
                   </p>
@@ -386,15 +386,15 @@ export default async function StaffWorkOrderDetailPage({
                   {intakePhotoLinks.map((photo, index) => (
                     <article
                       key={photo.id}
-                      className="rounded-[1.5rem] border border-white/10 bg-black/20 p-5"
+                      className="app-panel-subtle"
                     >
-                      <p className="text-sm font-medium text-white">
+                      <p className="text-sm font-medium text-slate-900">
                         Intake photo {index + 1}
                       </p>
-                      <p className="mt-2 text-sm leading-7 text-stone-300">
+                      <p className="mt-2 text-sm leading-7 text-slate-600">
                         Uploaded {formatWorkOrderDateTime(photo.created_at)}
                       </p>
-                      <p className="text-sm leading-7 text-stone-400">
+                      <p className="text-sm leading-7 text-slate-500">
                         {photo.content_type || "Unknown file type"}
                       </p>
                       {photo.signedUrl ? (
@@ -402,12 +402,12 @@ export default async function StaffWorkOrderDetailPage({
                           href={photo.signedUrl}
                           target="_blank"
                           rel="noreferrer"
-                          className="mt-4 inline-flex items-center justify-center rounded-full border border-white/15 px-4 py-2 text-sm font-medium text-white transition hover:border-white/30 hover:bg-white/5"
+                          className="app-button-secondary mt-4 items-center justify-center px-4 py-2"
                         >
                           Open Photo
                         </a>
                       ) : (
-                        <p className="mt-4 text-sm text-stone-500">
+                        <p className="mt-4 text-sm text-slate-500">
                           Signed preview link unavailable.
                         </p>
                       )}
@@ -417,24 +417,24 @@ export default async function StaffWorkOrderDetailPage({
               )}
             </section>
 
-            <section className="rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-2xl shadow-black/30 backdrop-blur md:p-8">
+            <section className="app-panel md:p-8">
               <div className="flex items-center justify-between gap-4">
                 <div>
-                  <p className="text-sm uppercase tracking-[0.25em] text-stone-400">
+                  <p className="text-sm uppercase tracking-[0.25em] text-slate-500">
                     Closeout Photos
                   </p>
-                  <h2 className="mt-2 text-3xl font-semibold tracking-tight text-white">
+                  <h2 className="mt-2 text-3xl font-semibold tracking-tight text-slate-900">
                     Completion attachments
                   </h2>
                 </div>
               </div>
 
               {closeoutPhotoLinks.length === 0 ? (
-                <div className="mt-6 rounded-[1.75rem] border border-dashed border-white/10 bg-black/20 px-6 py-8 text-center">
-                  <p className="text-lg font-medium text-white">
+                <div className="app-panel-empty mt-6">
+                  <p className="text-lg font-medium text-slate-900">
                     No closeout photos yet.
                   </p>
-                  <p className="mt-3 text-sm leading-7 text-stone-400">
+                  <p className="mt-3 text-sm leading-7 text-slate-500">
                     Once Phase 4 closeout is wired, after-repair photos will appear
                     here in a section separate from the original intake images.
                   </p>
@@ -444,15 +444,15 @@ export default async function StaffWorkOrderDetailPage({
                   {closeoutPhotoLinks.map((photo, index) => (
                     <article
                       key={photo.id}
-                      className="rounded-[1.5rem] border border-white/10 bg-black/20 p-5"
+                      className="app-panel-subtle"
                     >
-                      <p className="text-sm font-medium text-white">
+                      <p className="text-sm font-medium text-slate-900">
                         Closeout photo {index + 1}
                       </p>
-                      <p className="mt-2 text-sm leading-7 text-stone-300">
+                      <p className="mt-2 text-sm leading-7 text-slate-600">
                         Uploaded {formatWorkOrderDateTime(photo.created_at)}
                       </p>
-                      <p className="text-sm leading-7 text-stone-400">
+                      <p className="text-sm leading-7 text-slate-500">
                         {photo.content_type || "Unknown file type"}
                       </p>
                       {photo.signedUrl ? (
@@ -460,12 +460,12 @@ export default async function StaffWorkOrderDetailPage({
                           href={photo.signedUrl}
                           target="_blank"
                           rel="noreferrer"
-                          className="mt-4 inline-flex items-center justify-center rounded-full border border-white/15 px-4 py-2 text-sm font-medium text-white transition hover:border-white/30 hover:bg-white/5"
+                          className="app-button-secondary mt-4 items-center justify-center px-4 py-2"
                         >
                           Open Photo
                         </a>
                       ) : (
-                        <p className="mt-4 text-sm text-stone-500">
+                        <p className="mt-4 text-sm text-slate-500">
                           Signed preview link unavailable.
                         </p>
                       )}
@@ -475,20 +475,20 @@ export default async function StaffWorkOrderDetailPage({
               )}
             </section>
 
-            <section className="rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-2xl shadow-black/30 backdrop-blur md:p-8">
-              <p className="text-sm uppercase tracking-[0.25em] text-stone-400">
+            <section className="app-panel md:p-8">
+              <p className="text-sm uppercase tracking-[0.25em] text-slate-500">
                 Timeline
               </p>
-              <h2 className="mt-2 text-3xl font-semibold tracking-tight text-white">
+              <h2 className="mt-2 text-3xl font-semibold tracking-tight text-slate-900">
                 Request history
               </h2>
 
               {timelineEvents.length === 0 ? (
-                <div className="mt-6 rounded-[1.75rem] border border-dashed border-white/10 bg-black/20 px-6 py-8 text-center">
-                  <p className="text-lg font-medium text-white">
+                <div className="app-panel-empty mt-6">
+                  <p className="text-lg font-medium text-slate-900">
                     No timeline entries yet.
                   </p>
-                  <p className="mt-3 text-sm leading-7 text-stone-400">
+                  <p className="mt-3 text-sm leading-7 text-slate-500">
                     Staff notes, status changes, and assignment updates will
                     appear here as the request moves forward.
                   </p>
@@ -503,18 +503,18 @@ export default async function StaffWorkOrderDetailPage({
                     return (
                       <article
                         key={event.id}
-                        className="rounded-[1.5rem] border border-white/10 bg-black/20 p-5"
+                        className="app-panel-subtle"
                       >
                         <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
                           <div>
-                            <p className="text-lg font-medium text-white">
+                            <p className="text-lg font-medium text-slate-900">
                               {getTimelineTitle(event)}
                             </p>
-                            <p className="mt-2 text-sm leading-7 text-stone-300">
+                            <p className="mt-2 text-sm leading-7 text-slate-600">
                               {getTimelineBody(event)}
                             </p>
                           </div>
-                          <div className="rounded-[1.25rem] border border-white/10 bg-white/[0.03] px-4 py-3 text-sm leading-7 text-stone-300 md:min-w-[220px]">
+                          <div className="app-panel-subtle md:min-w-[220px]">
                             <p>{formatWorkOrderDateTime(event.created_at)}</p>
                             <p>{actor?.fullName || "System or tenant flow"}</p>
                           </div>
@@ -528,14 +528,14 @@ export default async function StaffWorkOrderDetailPage({
           </section>
 
           <aside className="space-y-8">
-            <section className="rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-2xl shadow-black/30 backdrop-blur md:p-8">
-              <p className="text-sm uppercase tracking-[0.25em] text-stone-400">
+            <section className="app-panel md:p-8">
+              <p className="text-sm uppercase tracking-[0.25em] text-slate-500">
                 Closeout Workflow
               </p>
-              <h2 className="mt-2 text-3xl font-semibold tracking-tight text-white">
+              <h2 className="mt-2 text-3xl font-semibold tracking-tight text-slate-900">
                 Repair completion
               </h2>
-              <p className="mt-3 text-sm leading-7 text-stone-400">
+              <p className="mt-3 text-sm leading-7 text-slate-500">
                 This Phase 4 panel is where staff will finish the repair, capture
                 the required summary, and attach after-work photos before the
                 request moves into a completed state.
@@ -554,41 +554,41 @@ export default async function StaffWorkOrderDetailPage({
               </div>
             </section>
 
-            <section className="rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-2xl shadow-black/30 backdrop-blur md:p-8">
-              <p className="text-sm uppercase tracking-[0.25em] text-stone-400">
+            <section className="app-panel md:p-8">
+              <p className="text-sm uppercase tracking-[0.25em] text-slate-500">
                 Repair Report
               </p>
-              <h2 className="mt-2 text-3xl font-semibold tracking-tight text-white">
+              <h2 className="mt-2 text-3xl font-semibold tracking-tight text-slate-900">
                 Report delivery
               </h2>
-              <p className="mt-3 text-sm leading-7 text-stone-400">
+              <p className="mt-3 text-sm leading-7 text-slate-500">
                 This panel tracks the tenant-facing repair report and completion email.
               </p>
 
-              <div className="mt-6 rounded-[1.5rem] border border-white/10 bg-black/20 p-5">
-                <div className="space-y-3 text-sm leading-7 text-stone-300">
+              <div className="mt-6 app-panel-subtle">
+                <div className="space-y-3 text-sm leading-7 text-slate-600">
                   <p>
-                    <span className="font-medium text-white">Status:</span>{" "}
+                    <span className="font-medium text-slate-900">Status:</span>{" "}
                     {reportStatusLabel}
                   </p>
                   <p>
-                    <span className="font-medium text-white">Generated:</span>{" "}
+                    <span className="font-medium text-slate-900">Generated:</span>{" "}
                     {formatWorkOrderDateTime(report?.generated_at ?? null)}
                   </p>
                   <p>
-                    <span className="font-medium text-white">Delivered:</span>{" "}
+                    <span className="font-medium text-slate-900">Delivered:</span>{" "}
                     {formatWorkOrderDateTime(report?.delivered_at ?? null)}
                   </p>
                   <p>
-                    <span className="font-medium text-white">Email ID:</span>{" "}
+                    <span className="font-medium text-slate-900">Email ID:</span>{" "}
                     {report?.email_message_id || "Not recorded"}
                   </p>
                   <p>
-                    <span className="font-medium text-white">Storage path:</span>{" "}
+                    <span className="font-medium text-slate-900">Storage path:</span>{" "}
                     {report?.storage_path || "Not stored yet"}
                   </p>
                   {report?.last_error ? (
-                    <p className="rounded-[1rem] border border-rose-300/20 bg-rose-400/10 px-4 py-3 text-rose-100">
+                    <p className="rounded-[1rem] border border-rose-200 bg-rose-50 px-4 py-3 text-rose-800">
                       {report.last_error}
                     </p>
                   ) : null}
@@ -601,14 +601,14 @@ export default async function StaffWorkOrderDetailPage({
               />
             </section>
 
-            <section className="rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-2xl shadow-black/30 backdrop-blur md:p-8">
-              <p className="text-sm uppercase tracking-[0.25em] text-stone-400">
+            <section className="app-panel md:p-8">
+              <p className="text-sm uppercase tracking-[0.25em] text-slate-500">
                 Manage Request
               </p>
-              <h2 className="mt-2 text-3xl font-semibold tracking-tight text-white">
+              <h2 className="mt-2 text-3xl font-semibold tracking-tight text-slate-900">
                 Status and assignment
               </h2>
-              <p className="mt-3 text-sm leading-7 text-stone-400">
+              <p className="mt-3 text-sm leading-7 text-slate-500">
                 Use this panel to move the request through the workflow and assign
                 ownership to the super or backup user.
               </p>
@@ -627,14 +627,14 @@ export default async function StaffWorkOrderDetailPage({
               </div>
             </section>
 
-            <section className="rounded-[2rem] border border-white/10 bg-white/5 p-6 shadow-2xl shadow-black/30 backdrop-blur md:p-8">
-              <p className="text-sm uppercase tracking-[0.25em] text-stone-400">
+            <section className="app-panel md:p-8">
+              <p className="text-sm uppercase tracking-[0.25em] text-slate-500">
                 Internal Notes
               </p>
-              <h2 className="mt-2 text-3xl font-semibold tracking-tight text-white">
+              <h2 className="mt-2 text-3xl font-semibold tracking-tight text-slate-900">
                 Staff-only context
               </h2>
-              <p className="mt-3 text-sm leading-7 text-stone-400">
+              <p className="mt-3 text-sm leading-7 text-slate-500">
                 These notes are only visible inside the staff workflow and are
                 never shown in tenant-facing views.
               </p>
@@ -644,7 +644,7 @@ export default async function StaffWorkOrderDetailPage({
               </div>
 
               {internalNotes.length === 0 ? (
-                <div className="mt-6 rounded-[1.5rem] border border-dashed border-white/10 bg-black/20 px-5 py-6 text-sm leading-7 text-stone-400">
+                <div className="app-panel-empty mt-6 px-5 py-6 text-sm leading-7 text-slate-500">
                   No internal notes yet.
                 </div>
               ) : (
@@ -657,10 +657,10 @@ export default async function StaffWorkOrderDetailPage({
                     return (
                       <article
                         key={event.id}
-                        className="rounded-[1.5rem] border border-white/10 bg-black/20 p-4"
+                        className="app-panel-muted p-4"
                       >
-                        <div className="flex flex-col gap-2 text-sm leading-7 text-stone-300">
-                          <p className="font-medium text-white">
+                        <div className="flex flex-col gap-2 text-sm leading-7 text-slate-600">
+                          <p className="font-medium text-slate-900">
                             {actor?.fullName || "Staff"} on{" "}
                             {formatWorkOrderDateTime(event.created_at)}
                           </p>
@@ -678,3 +678,4 @@ export default async function StaffWorkOrderDetailPage({
     </main>
   );
 }
+

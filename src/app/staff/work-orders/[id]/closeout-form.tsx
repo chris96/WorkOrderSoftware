@@ -33,8 +33,8 @@ function formatFileSize(size: number) {
 }
 
 function getInputClassName(disabled?: boolean, hasError?: boolean) {
-  return `w-full rounded-[1.5rem] border bg-white/5 px-4 py-3 text-sm text-stone-100 outline-none transition placeholder:text-stone-500 focus:border-amber-300/60 ${
-    hasError ? "border-rose-300/40" : "border-white/10"
+  return `w-full rounded-[1.5rem] border bg-white/92 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-blue-500 ${
+    hasError ? "border-rose-300 bg-rose-50" : "border-slate-200"
   } ${disabled ? "cursor-not-allowed opacity-60" : ""}`;
 }
 
@@ -143,33 +143,33 @@ export function CloseoutForm({
   if (isClosed) {
     return (
       <div className="space-y-4">
-        <div className="rounded-[1.5rem] border border-emerald-300/15 bg-emerald-400/10 px-5 py-5 text-sm leading-7 text-emerald-50">
+        <div className="rounded-[1.5rem] border border-emerald-200 bg-emerald-50 px-5 py-5 text-sm leading-7 text-emerald-800">
           This request has been closed and is now in its completed state.
         </div>
 
-        <div className="rounded-[1.5rem] border border-white/10 bg-black/20 px-5 py-5">
-          <p className="text-sm uppercase tracking-[0.2em] text-stone-500">
+        <div className="app-panel-subtle px-5 py-5">
+          <p className="text-sm uppercase tracking-[0.2em] text-slate-500">
             Closeout summary
           </p>
-          <div className="mt-4 space-y-3 text-sm leading-7 text-stone-300">
+          <div className="mt-4 space-y-3 text-sm leading-7 text-slate-600">
             <p>
-              <span className="font-medium text-white">Repair summary:</span>{" "}
+              <span className="font-medium text-slate-900">Repair summary:</span>{" "}
               {repairSummary || "No repair summary recorded."}
             </p>
             <p>
-              <span className="font-medium text-white">Materials used:</span>{" "}
+              <span className="font-medium text-slate-900">Materials used:</span>{" "}
               {materialsUsed || "No materials were recorded."}
             </p>
             <p>
-              <span className="font-medium text-white">Internal completion notes:</span>{" "}
+              <span className="font-medium text-slate-900">Internal completion notes:</span>{" "}
               {completionNotes || "No internal completion notes were recorded."}
             </p>
             <p>
-              <span className="font-medium text-white">Closed by:</span>{" "}
+              <span className="font-medium text-slate-900">Closed by:</span>{" "}
               {closedByName || "Unknown staff user"}
             </p>
             <p>
-              <span className="font-medium text-white">Closed at:</span>{" "}
+              <span className="font-medium text-slate-900">Closed at:</span>{" "}
               {closedAt || "Not available"}
             </p>
           </div>
@@ -180,7 +180,7 @@ export function CloseoutForm({
 
   return (
     <div className="space-y-5">
-      <div className="rounded-[1.5rem] border border-amber-300/15 bg-amber-300/10 px-5 py-5 text-sm leading-7 text-amber-50">
+      <div className="rounded-[1.5rem] border border-blue-200 bg-blue-50 px-5 py-5 text-sm leading-7 text-blue-900">
         Close this request only after the repair is actually complete. This action
         records the final repair summary, marks the request closed, and moves it out
         of the open queue.
@@ -191,10 +191,10 @@ export function CloseoutForm({
           <div
             className={`rounded-[1.25rem] border px-4 py-3 text-sm leading-7 ${
               messageTone === "error"
-                ? "border-rose-300/20 bg-rose-400/10 text-rose-50"
+                ? "border-rose-200 bg-rose-50 text-rose-800"
                 : messageTone === "success"
-                  ? "border-emerald-300/20 bg-emerald-400/10 text-emerald-50"
-                  : "border-white/10 bg-black/20 text-stone-200"
+                  ? "border-emerald-200 bg-emerald-50 text-emerald-800"
+                  : "border-slate-200 bg-white/80 text-slate-700"
             }`}
           >
             {message}
@@ -204,7 +204,7 @@ export function CloseoutForm({
         <div className="space-y-2">
           <label
             htmlFor="repair-summary"
-            className="text-sm font-medium text-stone-200"
+            className="app-label"
           >
             Repair summary
           </label>
@@ -217,17 +217,17 @@ export function CloseoutForm({
             disabled={isSubmitting}
             className={getInputClassName(isSubmitting, Boolean(fieldError))}
           />
-          <div className="flex items-center justify-between gap-3 text-xs uppercase tracking-[0.18em] text-stone-500">
+          <div className="flex items-center justify-between gap-3 text-xs uppercase tracking-[0.18em] text-slate-500">
             <span>Required for closeout</span>
             <span>{repairSummaryLength} characters</span>
           </div>
-          {fieldError ? <p className="text-sm text-rose-200">{fieldError}</p> : null}
+          {fieldError ? <p className="text-sm text-rose-700">{fieldError}</p> : null}
         </div>
 
         <div className="space-y-2">
           <label
             htmlFor="materials-used"
-            className="text-sm font-medium text-stone-200"
+            className="app-label"
           >
             Materials used
           </label>
@@ -240,7 +240,7 @@ export function CloseoutForm({
             disabled={isSubmitting}
             className={getInputClassName(isSubmitting)}
           />
-          <p className="text-sm leading-7 text-stone-500">
+          <p className="text-sm leading-7 text-slate-500">
             Optional. This can later feed into the final repair report.
           </p>
         </div>
@@ -248,7 +248,7 @@ export function CloseoutForm({
         <div className="space-y-2">
           <label
             htmlFor="completion-notes"
-            className="text-sm font-medium text-stone-200"
+            className="app-label"
           >
             Internal completion notes
           </label>
@@ -261,7 +261,7 @@ export function CloseoutForm({
             disabled={isSubmitting}
             className={getInputClassName(isSubmitting)}
           />
-          <p className="text-sm leading-7 text-stone-500">
+          <p className="text-sm leading-7 text-slate-500">
             These notes are intended to stay staff-only.
           </p>
         </div>
@@ -269,20 +269,20 @@ export function CloseoutForm({
         <div className="space-y-3">
           <label
             htmlFor="closeout-photos"
-            className="text-sm font-medium text-stone-200"
+            className="app-label"
           >
             Closeout photos
           </label>
           <label
             htmlFor="closeout-photos"
-            className={`flex cursor-pointer flex-col items-center justify-center rounded-[1.75rem] border border-dashed border-white/15 bg-black/20 px-6 py-8 text-center transition hover:border-white/25 hover:bg-black/30 ${
+            className={`flex cursor-pointer flex-col items-center justify-center rounded-[1.75rem] border border-dashed border-slate-300 bg-white/72 px-6 py-8 text-center transition hover:border-blue-300 hover:bg-blue-50/50 ${
               isSubmitting ? "cursor-not-allowed opacity-60" : ""
             }`}
           >
-            <span className="text-base font-medium text-white">
+            <span className="text-base font-medium text-slate-900">
               Add completion photos
             </span>
-            <span className="mt-2 max-w-md text-sm leading-7 text-stone-400">
+            <span className="mt-2 max-w-md text-sm leading-7 text-slate-500">
               Upload optional after-repair photos so staff can document the completed
               work separately from the original intake images.
             </span>
@@ -298,7 +298,7 @@ export function CloseoutForm({
           />
 
           {photoPreviews.length === 0 ? (
-            <p className="text-sm leading-7 text-stone-500">
+            <p className="text-sm leading-7 text-slate-500">
               No closeout photos selected yet.
             </p>
           ) : (
@@ -306,9 +306,9 @@ export function CloseoutForm({
               {photoPreviews.map((photo) => (
                 <div
                   key={photo.id}
-                  className="rounded-[1.25rem] border border-white/10 bg-black/20 px-4 py-3 text-sm leading-7 text-stone-300"
+                  className="rounded-[1.25rem] border border-slate-200 bg-white/80 px-4 py-3 text-sm leading-7 text-slate-600"
                 >
-                  <p className="font-medium text-white">{photo.name}</p>
+                  <p className="font-medium text-slate-900">{photo.name}</p>
                   <p>{photo.sizeLabel}</p>
                 </div>
               ))}
@@ -316,11 +316,11 @@ export function CloseoutForm({
           )}
         </div>
 
-        <div className="rounded-[1.5rem] border border-white/10 bg-black/20 px-5 py-5">
-          <p className="text-sm uppercase tracking-[0.2em] text-stone-500">
+        <div className="app-panel-subtle px-5 py-5">
+          <p className="text-sm uppercase tracking-[0.2em] text-slate-500">
             Closeout behavior
           </p>
-          <ul className="mt-4 space-y-2 text-sm leading-7 text-stone-300">
+          <ul className="mt-4 space-y-2 text-sm leading-7 text-slate-600">
             <li>Closing this request will set the status to closed.</li>
             <li>A completion timestamp and closing staff user will be recorded.</li>
             <li>Closeout photos will stay separate from intake photos in staff review.</li>
@@ -339,14 +339,14 @@ export function CloseoutForm({
               setFieldError(null);
               setMessage(null);
             }}
-            className="inline-flex justify-center rounded-full border border-white/15 px-5 py-3 text-sm font-medium text-white transition hover:border-white/30 hover:bg-white/5 disabled:cursor-not-allowed disabled:border-white/10 disabled:text-stone-500"
+            className="app-button-secondary justify-center disabled:text-slate-400"
           >
             Clear Closeout Form
           </button>
           <button
             type="submit"
             disabled={isSubmitting}
-            className="inline-flex justify-center rounded-full bg-amber-300 px-5 py-3 text-sm font-semibold text-stone-950 transition hover:bg-amber-200 disabled:cursor-not-allowed disabled:bg-amber-200/60"
+            className="app-button-primary justify-center font-semibold disabled:bg-blue-300"
           >
             {isSubmitting ? "Closing Request..." : "Complete Repair and Close Request"}
           </button>
@@ -355,3 +355,4 @@ export function CloseoutForm({
     </div>
   );
 }
+
