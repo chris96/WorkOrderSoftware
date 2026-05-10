@@ -1,6 +1,7 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
+import { timeAsync } from "@/lib/performance";
 import { STAFF_USER_ID_HEADER } from "@/lib/supabase/request-auth";
 import { createAdminSupabaseClient, createServerSupabaseClient } from "@/lib/supabase/server";
 
@@ -32,31 +33,33 @@ async function getAuthenticatedStaffUserId() {
 }
 
 export async function getOptionalStaffUser() {
-  const staffUserId = await getAuthenticatedStaffUserId();
+  return timeAsync("staff.getOptionalStaffUser", async () => {
+    const staffUserId = await getAuthenticatedStaffUserId();
 
-  if (!staffUserId) {
-    return null;
-  }
+    if (!staffUserId) {
+      return null;
+    }
 
-  const adminSupabase = createAdminSupabaseClient();
-  const { data: staffUser } = await adminSupabase
-    .from("users")
-    .select("id, email, full_name, role")
-    .eq("id", staffUserId)
-    .eq("is_active", true)
-    .in("role", [...staffRoles])
-    .maybeSingle();
+    const adminSupabase = createAdminSupabaseClient();
+    const { data: staffUser } = await adminSupabase
+      .from("users")
+      .select("id, email, full_name, role")
+      .eq("id", staffUserId)
+      .eq("is_active", true)
+      .in("role", [...staffRoles])
+      .maybeSingle();
 
-  if (!staffUser) {
-    return null;
-  }
+    if (!staffUser) {
+      return null;
+    }
 
-  return {
-    email: staffUser.email,
-    fullName: staffUser.full_name,
-    id: staffUser.id,
-    role: staffUser.role as StaffRole,
-  } satisfies StaffUser;
+    return {
+      email: staffUser.email,
+      fullName: staffUser.full_name,
+      id: staffUser.id,
+      role: staffUser.role as StaffRole,
+    } satisfies StaffUser;
+  });
 }
 
 export async function requireStaffUser() {

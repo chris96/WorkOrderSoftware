@@ -1,14 +1,15 @@
 import Link from "next/link";
 
 import { TenantSignOutButton } from "@/app/tenant/tenant-sign-out-button";
+import { timeAsync } from "@/lib/performance";
 import { requireTenantOwnedWorkOrder } from "@/lib/tenant-auth";
+import { createAdminSupabaseClient } from "@/lib/supabase/server";
 import {
   formatWorkOrderDateTime,
   formatWorkOrderStatus,
   getWorkOrderStatusClassName,
   type WorkOrderStatus,
 } from "@/lib/work-orders";
-import { createAdminSupabaseClient } from "@/lib/supabase/server";
 
 export default async function TenantRequestDetailPage({
   params,
@@ -23,26 +24,32 @@ export default async function TenantRequestDetailPage({
 }) {
   const { id } = await params;
   const { report: reportState } = await searchParams;
-  const { tenantUser, workOrder } = await requireTenantOwnedWorkOrder(id);
+  const { tenantUser, workOrder } = await timeAsync(
+    "tenant.requestDetail.authAndWorkOrder",
+    () => requireTenantOwnedWorkOrder(id)
+  );
   const supabase = createAdminSupabaseClient();
 
-  let unitNumber = "Unknown unit";
-
-  if (workOrder.unit_id) {
-    const { data: unit } = await supabase
-      .from("units")
-      .select("unit_number")
-      .eq("id", workOrder.unit_id)
-      .single();
-
-    unitNumber = unit?.unit_number ?? unitNumber;
-  }
-
-  const { data: report } = await supabase
-    .from("reports")
-    .select("delivery_status, generated_at, delivered_at")
-    .eq("work_order_id", workOrder.id)
-    .maybeSingle();
+  const [unitResult, reportResult] = await timeAsync(
+    "tenant.requestDetail.relatedData",
+    () =>
+      Promise.all([
+        workOrder.unit_id
+          ? supabase
+              .from("units")
+              .select("unit_number")
+              .eq("id", workOrder.unit_id)
+              .single()
+          : Promise.resolve({ data: null, error: null }),
+        supabase
+          .from("reports")
+          .select("delivery_status, generated_at, delivered_at")
+          .eq("work_order_id", workOrder.id)
+          .maybeSingle(),
+      ])
+  );
+  const unitNumber = unitResult.data?.unit_number ?? "Unknown unit";
+  const report = reportResult.data;
 
   let reportMessage: string | null = null;
 

@@ -1,4 +1,5 @@
 import { attachSignedUrls } from "@/lib/supabase/storage";
+import { timeAsync } from "@/lib/performance";
 import { createAdminSupabaseClient } from "@/lib/supabase/server";
 import { formatWorkOrderDateTime, type WorkOrderStatus } from "@/lib/work-orders";
 
@@ -61,7 +62,7 @@ export async function getRepairReportPayload(workOrderId: string) {
   const supabase = createAdminSupabaseClient();
 
   const [{ data: workOrder, error: workOrderError }, { data: photos, error: photosError }] =
-    await Promise.all([
+    await timeAsync("reports.payload.baseData", () => Promise.all([
       supabase
         .from("work_orders")
         .select(
@@ -74,7 +75,7 @@ export async function getRepairReportPayload(workOrderId: string) {
         .select("storage_bucket, storage_path, content_type, created_at, photo_type")
         .eq("work_order_id", workOrderId)
         .order("created_at", { ascending: true }),
-    ]);
+    ]));
 
   if (workOrderError || !workOrder) {
     throw new Error("Work order could not be found for report generation.");
@@ -96,7 +97,9 @@ export async function getRepairReportPayload(workOrderId: string) {
 
   const reportPhotos = (photos ?? []) as ReportPhotoRow[];
   const closeoutPhotos = reportPhotos.filter((photo) => photo.photo_type === "closeout");
-  const [unitResult, closerResult, closeoutPhotosWithUrls] = await Promise.all([
+  const [unitResult, closerResult, closeoutPhotosWithUrls] = await timeAsync(
+    "reports.payload.relatedData",
+    () => Promise.all([
     reportWorkOrder.unit_id
       ? supabase
           .from("units")
@@ -117,7 +120,7 @@ export async function getRepairReportPayload(workOrderId: string) {
       SIGNED_URL_TTL_SECONDS,
       "Closeout photo access could not be prepared for report generation."
     ),
-  ]);
+  ]));
 
   if (unitResult.error) {
     throw new Error("Unit information could not be loaded for report generation.");

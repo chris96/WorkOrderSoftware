@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { timeAsync } from "@/lib/performance";
 import { requireStaffUser } from "@/lib/staff-auth";
 import { attachSignedUrls } from "@/lib/supabase/storage";
 import { createAdminSupabaseClient } from "@/lib/supabase/server";
@@ -133,12 +134,12 @@ export default async function StaffWorkOrderDetailPage({
 }: {
   params: RouteParams;
 }) {
-  await requireStaffUser();
+  await timeAsync("staff.detail.auth", () => requireStaffUser());
   const { id } = await params;
   const supabase = createAdminSupabaseClient();
 
   const [workOrderResult, photosResult, eventsResult, staffUsersResult, reportResult] =
-    await Promise.all([
+    await timeAsync("staff.detail.baseData", () => Promise.all([
       supabase
         .from("work_orders")
         .select(
@@ -170,7 +171,7 @@ export default async function StaffWorkOrderDetailPage({
         )
         .eq("work_order_id", id)
         .maybeSingle(),
-    ]);
+    ]));
 
   if (workOrderResult.error || !workOrderResult.data) {
     notFound();
@@ -179,7 +180,7 @@ export default async function StaffWorkOrderDetailPage({
   const workOrder = workOrderResult.data as WorkOrderDetailRow;
   const allPhotos = (photosResult.data ?? []) as WorkOrderPhotoRow[];
 
-  const [unitResult, photoLinks] = await Promise.all([
+  const [unitResult, photoLinks] = await timeAsync("staff.detail.relatedData", () => Promise.all([
     workOrder.unit_id
       ? supabase
           .from("units")
@@ -193,7 +194,7 @@ export default async function StaffWorkOrderDetailPage({
       SIGNED_URL_TTL_SECONDS,
       "Photo preview links could not be prepared."
     ),
-  ]);
+  ]));
 
   const unitNumber = unitResult.data?.unit_number ?? "Unknown unit";
 
