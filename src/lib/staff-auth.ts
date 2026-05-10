@@ -2,7 +2,10 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { timeAsync } from "@/lib/performance";
-import { STAFF_USER_ID_HEADER } from "@/lib/supabase/request-auth";
+import {
+  STAFF_AUTH_VERIFIED_HEADER,
+  STAFF_USER_ID_HEADER,
+} from "@/lib/supabase/request-auth";
 import { createAdminSupabaseClient, createServerSupabaseClient } from "@/lib/supabase/server";
 
 export const staffRoles = ["super", "backup"] as const;
@@ -19,8 +22,10 @@ export type StaffUser = {
 async function getAuthenticatedStaffUserId() {
   const requestHeaders = await headers();
   const proxiedStaffUserId = requestHeaders.get(STAFF_USER_ID_HEADER);
+  const isProxyVerified =
+    requestHeaders.get(STAFF_AUTH_VERIFIED_HEADER) === "true";
 
-  if (proxiedStaffUserId) {
+  if (isProxyVerified && proxiedStaffUserId) {
     return proxiedStaffUserId;
   }
 

@@ -1,12 +1,18 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-import { STAFF_USER_ID_HEADER } from "@/lib/supabase/request-auth";
+import {
+  STAFF_AUTH_VERIFIED_HEADER,
+  STAFF_USER_ID_HEADER,
+} from "@/lib/supabase/request-auth";
 
 const openStaffPaths = ["/staff/bootstrap", "/staff/sign-in"];
 
 export async function proxy(request: NextRequest) {
   const requestHeaders = new Headers(request.headers);
+  requestHeaders.delete(STAFF_AUTH_VERIFIED_HEADER);
+  requestHeaders.delete(STAFF_USER_ID_HEADER);
+
   let response = NextResponse.next({
     request: {
       headers: requestHeaders,
@@ -47,15 +53,18 @@ export async function proxy(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const { pathname } = request.nextUrl;
+  const isStaffPagePath = pathname.startsWith("/staff");
   const isOpenStaffPath = openStaffPaths.some((path) => pathname.startsWith(path));
 
   if (user?.id) {
+    requestHeaders.set(STAFF_AUTH_VERIFIED_HEADER, "true");
     requestHeaders.set(STAFF_USER_ID_HEADER, user.id);
   } else {
+    requestHeaders.delete(STAFF_AUTH_VERIFIED_HEADER);
     requestHeaders.delete(STAFF_USER_ID_HEADER);
   }
 
-  if (!user && pathname.startsWith("/staff") && !isOpenStaffPath) {
+  if (!user && isStaffPagePath && !isOpenStaffPath) {
     const redirectUrl = request.nextUrl.clone();
     redirectUrl.pathname = "/staff/sign-in";
     return NextResponse.redirect(redirectUrl);
@@ -75,5 +84,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/staff", "/staff/:path*"],
+  matcher: ["/staff", "/staff/:path*", "/api/staff/:path*"],
 };
