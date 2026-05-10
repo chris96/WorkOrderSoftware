@@ -1,5 +1,11 @@
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
+import { timeAsync } from "@/lib/performance";
+import {
+  STAFF_AUTH_VERIFIED_HEADER,
+  STAFF_USER_ID_HEADER,
+} from "@/lib/supabase/request-auth";
 import { createAdminSupabaseClient, createServerSupabaseClient } from "@/lib/supabase/server";
 
 export const staffRoles = ["super", "backup"] as const;
@@ -13,35 +19,52 @@ export type StaffUser = {
   role: StaffRole;
 };
 
-export async function getOptionalStaffUser() {
+async function getAuthenticatedStaffUserId() {
+  const requestHeaders = await headers();
+  const proxiedStaffUserId = requestHeaders.get(STAFF_USER_ID_HEADER);
+  const isProxyVerified =
+    requestHeaders.get(STAFF_AUTH_VERIFIED_HEADER) === "true";
+
+  if (isProxyVerified && proxiedStaffUserId) {
+    return proxiedStaffUserId;
+  }
+
   const supabase = await createServerSupabaseClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) {
-    return null;
-  }
+  return user?.id ?? null;
+}
 
-  const adminSupabase = createAdminSupabaseClient();
-  const { data: staffUser } = await adminSupabase
-    .from("users")
-    .select("id, email, full_name, role")
-    .eq("id", user.id)
-    .eq("is_active", true)
-    .in("role", [...staffRoles])
-    .maybeSingle();
+export async function getOptionalStaffUser() {
+  return timeAsync("staff.getOptionalStaffUser", async () => {
+    const staffUserId = await getAuthenticatedStaffUserId();
 
-  if (!staffUser) {
-    return null;
-  }
+    if (!staffUserId) {
+      return null;
+    }
 
-  return {
-    email: staffUser.email,
-    fullName: staffUser.full_name,
-    id: staffUser.id,
-    role: staffUser.role as StaffRole,
-  } satisfies StaffUser;
+    const adminSupabase = createAdminSupabaseClient();
+    const { data: staffUser } = await adminSupabase
+      .from("users")
+      .select("id, email, full_name, role")
+      .eq("id", staffUserId)
+      .eq("is_active", true)
+      .in("role", [...staffRoles])
+      .maybeSingle();
+
+    if (!staffUser) {
+      return null;
+    }
+
+    return {
+      email: staffUser.email,
+      fullName: staffUser.full_name,
+      id: staffUser.id,
+      role: staffUser.role as StaffRole,
+    } satisfies StaffUser;
+  });
 }
 
 export async function requireStaffUser() {

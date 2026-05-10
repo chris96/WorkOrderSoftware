@@ -16,11 +16,11 @@ type CreatedStaffUser = {
 };
 
 function getInputClassName(hasError: boolean) {
-  return `w-full rounded-2xl border px-4 py-3 text-sm text-stone-100 outline-none transition ${
+  return `w-full rounded-2xl border px-4 py-3 text-sm text-slate-900 outline-none transition ${
     hasError
-      ? "border-rose-400/80 bg-rose-500/8 focus:border-rose-300"
-      : "border-white/10 bg-white/5 focus:border-amber-300/60 focus:bg-white/8"
-  } placeholder:text-stone-500`;
+      ? "border-rose-300 bg-rose-50 focus:border-rose-400"
+      : "border-slate-200 bg-white/92 focus:border-blue-500"
+  } placeholder:text-slate-400`;
 }
 
 export function BootstrapForm() {
@@ -129,8 +129,8 @@ export function BootstrapForm() {
         <div
           className={`rounded-[1.5rem] border px-5 py-4 text-sm leading-7 ${
             isSuccess
-              ? "border-emerald-300/25 bg-emerald-400/10 text-emerald-100"
-              : "border-rose-300/25 bg-rose-400/10 text-rose-100"
+              ? "border-emerald-200 bg-emerald-50 text-emerald-800"
+              : "border-rose-200 bg-rose-50 text-rose-800"
           }`}
         >
           {message}
@@ -138,17 +138,17 @@ export function BootstrapForm() {
       ) : null}
 
       {createdStaffUser ? (
-        <div className="rounded-[1.5rem] border border-white/10 bg-black/20 px-5 py-4 text-sm leading-7 text-stone-200">
-          <p className="font-medium text-white">{createdStaffUser.fullName}</p>
-          <p className="mt-1 text-stone-300">{createdStaffUser.email}</p>
+        <div className="rounded-[1.5rem] border border-slate-200 bg-white/80 px-5 py-4 text-sm leading-7 text-slate-700">
+          <p className="font-medium text-slate-900">{createdStaffUser.fullName}</p>
+          <p className="mt-1 text-slate-600">{createdStaffUser.email}</p>
           <p>
-            Role: <span className="text-amber-200">{createdStaffUser.role}</span>
+            Role: <span className="text-blue-700">{createdStaffUser.role}</span>
           </p>
         </div>
       ) : null}
 
       <div className="space-y-2">
-        <label htmlFor="bootstrap-key" className="text-sm font-medium text-stone-200">
+        <label htmlFor="bootstrap-key" className="app-label">
           Bootstrap key
         </label>
         <input
@@ -160,13 +160,13 @@ export function BootstrapForm() {
           onChange={(event) => updateField("bootstrapKey", event.target.value)}
         />
         {errors.bootstrapKey ? (
-          <p className="text-sm text-rose-300">{errors.bootstrapKey}</p>
+          <p className="text-sm text-rose-700">{errors.bootstrapKey}</p>
         ) : null}
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
         <div className="space-y-2">
-          <label htmlFor="full-name" className="text-sm font-medium text-stone-200">
+          <label htmlFor="full-name" className="app-label">
             Full name
           </label>
           <input
@@ -178,12 +178,12 @@ export function BootstrapForm() {
             onChange={(event) => updateField("fullName", event.target.value)}
           />
           {errors.fullName ? (
-            <p className="text-sm text-rose-300">{errors.fullName}</p>
+            <p className="text-sm text-rose-700">{errors.fullName}</p>
           ) : null}
         </div>
 
         <div className="space-y-2">
-          <label htmlFor="role" className="text-sm font-medium text-stone-200">
+          <label htmlFor="role" className="app-label">
             Staff role
           </label>
           <select
@@ -195,19 +195,19 @@ export function BootstrapForm() {
             }
           >
             {bootstrapStaffRoles.map((role) => (
-              <option key={role} value={role} className="bg-white text-stone-950">
+              <option key={role} value={role} className="bg-white text-slate-900">
                 {role}
               </option>
             ))}
           </select>
           {errors.role ? (
-            <p className="text-sm text-rose-300">{errors.role}</p>
+            <p className="text-sm text-rose-700">{errors.role}</p>
           ) : null}
         </div>
       </div>
 
       <div className="space-y-2">
-        <label htmlFor="email" className="text-sm font-medium text-stone-200">
+        <label htmlFor="email" className="app-label">
           Staff email
         </label>
         <input
@@ -219,12 +219,12 @@ export function BootstrapForm() {
           onChange={(event) => updateField("email", event.target.value)}
         />
         {errors.email ? (
-          <p className="text-sm text-rose-300">{errors.email}</p>
+          <p className="text-sm text-rose-700">{errors.email}</p>
         ) : null}
       </div>
 
       <div className="space-y-2">
-        <label htmlFor="password" className="text-sm font-medium text-stone-200">
+        <label htmlFor="password" className="app-label">
           Temporary password
         </label>
         <input
@@ -235,16 +235,16 @@ export function BootstrapForm() {
           value={values.password}
           onChange={(event) => updateField("password", event.target.value)}
         />
-        <p className="text-xs uppercase tracking-[0.2em] text-stone-500">
+        <p className="text-xs uppercase tracking-[0.2em] text-slate-500">
           Minimum 10 characters with uppercase, lowercase, and a number
         </p>
         {errors.password ? (
-          <p className="text-sm text-rose-300">{errors.password}</p>
+          <p className="text-sm text-rose-700">{errors.password}</p>
         ) : null}
       </div>
 
-      <div className="flex flex-col gap-3 border-t border-white/10 pt-6 sm:flex-row sm:items-center sm:justify-between">
-        <p className="text-sm leading-7 text-stone-400">
+      <div className="app-divider flex flex-col gap-3 pt-6 sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-sm leading-7 text-slate-500">
           Use this only to create the first staff accounts. Once the super and
           backup users exist, rotate the bootstrap key and rely on sign-in.
         </p>
@@ -252,7 +252,7 @@ export function BootstrapForm() {
         <button
           type="submit"
           disabled={isSubmitting}
-          className="rounded-full bg-amber-300 px-6 py-3 text-sm font-semibold text-stone-950 transition hover:bg-amber-200 disabled:cursor-not-allowed disabled:bg-amber-200/60"
+          className="app-button-primary px-6 font-semibold disabled:bg-blue-300"
         >
           {isSubmitting ? "Creating Staff User..." : "Create Staff User"}
         </button>

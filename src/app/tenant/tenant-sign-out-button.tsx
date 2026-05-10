@@ -5,7 +5,7 @@ import { useState } from "react";
 
 import { createBrowserSupabaseClient } from "@/lib/supabase/browser";
 
-export function StaffSignOutButton() {
+export function TenantSignOutButton() {
   const router = useRouter();
   const supabase = createBrowserSupabaseClient();
   const [isSigningOut, setIsSigningOut] = useState(false);
@@ -13,7 +13,7 @@ export function StaffSignOutButton() {
   async function handleSignOut() {
     setIsSigningOut(true);
     await supabase.auth.signOut();
-    router.replace("/staff/sign-in");
+    router.replace("/tenant/sign-in");
     router.refresh();
   }
 
@@ -22,7 +22,7 @@ export function StaffSignOutButton() {
       type="button"
       onClick={handleSignOut}
       disabled={isSigningOut}
-      className="app-button-secondary disabled:text-slate-400"
+      className="app-button-secondary"
     >
       {isSigningOut ? "Signing Out..." : "Sign Out"}
     </button>

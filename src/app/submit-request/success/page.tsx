@@ -33,37 +33,35 @@ export default async function SubmitRequestSuccessPage({
 
   return (
     <main className="px-6 py-12 md:px-8 md:py-16">
-      <div className="mx-auto grid w-full max-w-5xl gap-8 xl:grid-cols-[0.9fr_1.1fr]">
-        <section className="rounded-[2rem] border border-white/10 bg-white/6 p-8 shadow-2xl shadow-black/30 backdrop-blur md:p-10">
-          <p className="text-sm uppercase tracking-[0.3em] text-amber-300">
-            Request Received
-          </p>
-          <h1 className="mt-4 text-4xl font-semibold tracking-tight text-white md:text-5xl">
+      <div className="app-page-grid max-w-5xl">
+        <section className="app-aside">
+          <p className="app-kicker">Request Received</p>
+          <h1 className="app-heading">
             {duplicate
               ? "We already have this request on file."
               : "Your maintenance request was submitted."}
           </h1>
-          <p className="mt-5 max-w-xl text-base leading-8 text-stone-300 md:text-lg">
+          <p className="mt-5 max-w-xl text-base leading-8 text-slate-600 md:text-lg">
             {message}
           </p>
 
           <div className="mt-10 space-y-4">
-            <div className="rounded-[1.5rem] border border-white/10 bg-black/20 p-5">
-              <h2 className="text-sm uppercase tracking-[0.24em] text-stone-400">
+            <div className="app-note-info">
+              <h2 className="text-sm uppercase tracking-[0.24em] text-slate-500">
                 What happens next
               </h2>
-              <ul className="mt-4 space-y-3 text-sm leading-7 text-stone-300">
+              <ul className="mt-4 space-y-3 text-sm leading-7 text-slate-600">
                 <li>The request is now available in the building work order system.</li>
                 <li>Staff will review the issue details and any intake photos.</li>
                 <li>Future phases will add staff updates, closeout notes, and tenant notifications.</li>
               </ul>
             </div>
 
-            <div className="rounded-[1.5rem] border border-emerald-300/20 bg-emerald-300/8 p-5">
-              <p className="text-sm font-medium text-emerald-100">
+            <div className="rounded-[1.5rem] border border-emerald-200 bg-emerald-50/90 p-5">
+              <p className="text-sm font-medium text-emerald-800">
                 Submission protection is active
               </p>
-              <p className="mt-2 text-sm leading-7 text-emerald-50/90">
+              <p className="mt-2 text-sm leading-7 text-emerald-900/80">
                 After a successful submit, this confirmation page replaces the
                 form in browser history to reduce accidental repeat submissions.
               </p>
@@ -71,33 +69,33 @@ export default async function SubmitRequestSuccessPage({
           </div>
         </section>
 
-        <section className="rounded-[2rem] border border-white/10 bg-stone-950/70 p-6 shadow-2xl shadow-black/40 backdrop-blur md:p-8">
-          <div className="rounded-[1.75rem] border border-white/10 bg-black/20 p-6">
-            <p className="text-sm uppercase tracking-[0.25em] text-stone-400">
+        <section className="app-form-panel">
+          <div className="app-note-info rounded-[1.75rem] p-6">
+            <p className="text-sm uppercase tracking-[0.25em] text-slate-500">
               Request Summary
             </p>
-            <dl className="mt-5 space-y-4 text-sm leading-7 text-stone-300">
-              <div className="flex items-start justify-between gap-4 border-b border-white/10 pb-4">
-                <dt className="text-stone-400">Unit</dt>
-                <dd className="text-right font-medium text-white">
+            <dl className="mt-5 space-y-4 text-sm leading-7 text-slate-600">
+              <div className="flex items-start justify-between gap-4 border-b border-slate-200 pb-4">
+                <dt className="text-slate-500">Unit</dt>
+                <dd className="text-right font-medium text-slate-900">
                   {unit ?? "Not available"}
                 </dd>
               </div>
-              <div className="flex items-start justify-between gap-4 border-b border-white/10 pb-4">
-                <dt className="text-stone-400">Request ID</dt>
-                <dd className="text-right font-medium text-amber-200">
+              <div className="flex items-start justify-between gap-4 border-b border-slate-200 pb-4">
+                <dt className="text-slate-500">Request ID</dt>
+                <dd className="text-right font-medium text-blue-700">
                   {requestId ?? "Not available"}
                 </dd>
               </div>
-              <div className="flex items-start justify-between gap-4 border-b border-white/10 pb-4">
-                <dt className="text-stone-400">Current status</dt>
-                <dd className="text-right font-medium text-white">
+              <div className="flex items-start justify-between gap-4 border-b border-slate-200 pb-4">
+                <dt className="text-slate-500">Current status</dt>
+                <dd className="text-right font-medium text-slate-900">
                   {status ?? "Not available"}
                 </dd>
               </div>
               <div className="flex items-start justify-between gap-4">
-                <dt className="text-stone-400">Photos uploaded</dt>
-                <dd className="text-right font-medium text-white">
+                <dt className="text-slate-500">Photos uploaded</dt>
+                <dd className="text-right font-medium text-slate-900">
                   {photoCount}
                 </dd>
               </div>
@@ -107,13 +105,13 @@ export default async function SubmitRequestSuccessPage({
           <div className="mt-6 flex flex-col gap-3 sm:flex-row">
             <Link
               href="/submit-request"
-              className="inline-flex items-center justify-center rounded-full bg-amber-300 px-5 py-3 text-sm font-semibold text-stone-950 transition hover:bg-amber-200"
+              className="app-button-primary items-center justify-center"
             >
               Submit Another Request
             </Link>
             <Link
               href="/"
-              className="inline-flex items-center justify-center rounded-full border border-white/15 px-5 py-3 text-sm font-medium text-white transition hover:border-white/30 hover:bg-white/5"
+              className="app-button-secondary items-center justify-center"
             >
               Back Home
             </Link>

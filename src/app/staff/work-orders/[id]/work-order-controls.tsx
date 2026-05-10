@@ -23,7 +23,7 @@ type WorkOrderControlsProps = {
 };
 
 function getInputClassName() {
-  return "w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-stone-100 outline-none transition focus:border-amber-300/60";
+  return "w-full rounded-2xl border border-slate-200 bg-white/92 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-blue-500";
 }
 
 export function WorkOrderControls({
@@ -75,13 +75,13 @@ export function WorkOrderControls({
   return (
     <form className="space-y-4" onSubmit={handleSubmit}>
       {message ? (
-        <div className="rounded-[1.25rem] border border-white/10 bg-black/20 px-4 py-3 text-sm leading-7 text-stone-200">
+        <div className="rounded-[1.25rem] border border-slate-200 bg-white/80 px-4 py-3 text-sm leading-7 text-slate-700">
           {message}
         </div>
       ) : null}
 
       <div className="space-y-2">
-        <label htmlFor="status" className="text-sm font-medium text-stone-200">
+        <label htmlFor="status" className="app-label">
           Status
         </label>
         <select
@@ -97,7 +97,7 @@ export function WorkOrderControls({
             <option
               key={statusOption}
               value={statusOption}
-              className="bg-white text-stone-950"
+              className="bg-white text-slate-900"
             >
               {formatWorkOrderStatus(statusOption)}
             </option>
@@ -108,7 +108,7 @@ export function WorkOrderControls({
       <div className="space-y-2">
         <label
           htmlFor="assignee"
-          className="text-sm font-medium text-stone-200"
+          className="app-label"
         >
           Assigned staff
         </label>
@@ -118,14 +118,14 @@ export function WorkOrderControls({
           value={selectedAssignee}
           onChange={(event) => setSelectedAssignee(event.target.value)}
         >
-          <option value="" className="bg-white text-stone-950">
+          <option value="" className="bg-white text-slate-900">
             Unassigned
           </option>
           {staffOptions.map((staffOption) => (
             <option
               key={staffOption.id}
               value={staffOption.id}
-              className="bg-white text-stone-950"
+              className="bg-white text-slate-900"
             >
               {staffOption.fullName} ({staffOption.role})
             </option>
@@ -136,7 +136,7 @@ export function WorkOrderControls({
       <button
         type="submit"
         disabled={isPending}
-        className="w-full rounded-full bg-amber-300 px-5 py-3 text-sm font-semibold text-stone-950 transition hover:bg-amber-200 disabled:cursor-not-allowed disabled:bg-amber-200/60"
+        className="app-button-primary w-full justify-center font-semibold disabled:bg-blue-300"
       >
         {isPending ? "Saving Changes..." : "Save Status and Assignment"}
       </button>
