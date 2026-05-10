@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { FormEvent, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 
 import { createBrowserSupabaseClient } from "@/lib/supabase/browser";
 
@@ -28,6 +28,10 @@ export function SignInForm({ initialMessage }: SignInFormProps) {
   const [message, setMessage] = useState<string | null>(initialMessage ?? null);
   const [emailError, setEmailError] = useState<string | null>(null);
   const [passwordError, setPasswordError] = useState<string | null>(null);
+
+  useEffect(() => {
+    router.prefetch("/staff");
+  }, [router]);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -66,11 +70,28 @@ export function SignInForm({ initialMessage }: SignInFormProps) {
     }
 
     router.replace("/staff");
-    router.refresh();
   }
 
   return (
-    <form className="space-y-6" onSubmit={handleSubmit} noValidate>
+    <form className="relative space-y-6" onSubmit={handleSubmit} noValidate>
+      {isSubmitting ? (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/20 px-6 backdrop-blur-sm"
+          role="status"
+          aria-live="polite"
+        >
+          <div className="w-full max-w-md rounded-[2rem] border border-slate-200 bg-white/95 p-8 text-center shadow-[0_28px_90px_rgba(15,23,42,0.18)]">
+            <div className="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-blue-100 border-t-blue-600" />
+            <p className="mt-5 text-lg font-semibold text-slate-900">
+              Opening staff portal
+            </p>
+            <p className="mt-2 text-sm leading-7 text-slate-500">
+              Signing you in and loading the current work order queue.
+            </p>
+          </div>
+        </div>
+      ) : null}
+
       {message ? (
         <div className="rounded-[1.5rem] border border-rose-200 bg-rose-50 px-5 py-4 text-sm leading-7 text-rose-800">
           {message}
